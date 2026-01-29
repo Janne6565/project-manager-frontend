@@ -1,9 +1,10 @@
+import RootPage from "@/components/display/RootPage/RootPage.tsx";
+import {ThemeProvider} from "@/components/technical/theme-provider.tsx";
+
 export function App() {
-  return (
-    <div className="flex items-center justify-center min-h-screen">
-      <div className="font-medium">Hello World</div>
-    </div>
-  )
+    return <ThemeProvider>
+        <RootPage/>
+    </ThemeProvider>;
 }
 
-export default App
+export default App;
