@@ -5,10 +5,16 @@ type TranslationShape<T> = {
 };
 
 export default {
-  hello: 'Hallo {{name}}',
-  title: 'Meine App',
-  fortnite: {
-    name: 'Fortnite',
-    password: 'testtt'
-  }
+  languages: {
+    de: 'Deutsch',
+    en: 'English',
+    title: 'Sprachen',
+  },
+  tooltips: {
+    logo: 'Willkommen zu meinen Projekten :)',
+    colorScheme: {
+      toggle: 'Farbschema wechseln',
+    },
+    languageSelector: 'Sprache wechseln',
+  },
 } satisfies TranslationShape<typeof enCommon>;
