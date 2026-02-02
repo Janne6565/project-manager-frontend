@@ -36,7 +36,9 @@ export async function apiFetch<T>(
 
 export async function createProject(data: {
   name: string;
-  description: string;
+  description?: string;
+  descriptionEn?: string;
+  descriptionDe?: string;
   additionalInformation?: { projectId?: string };
   repositories?: string[];
   index: number;
@@ -68,6 +70,8 @@ export async function updateProject(
   data: {
     name?: string;
     description?: string;
+    descriptionEn?: string;
+    descriptionDe?: string;
     repositories?: string[];
     additionalInformation?: { projectId?: string; [key: string]: unknown };
     index?: number;

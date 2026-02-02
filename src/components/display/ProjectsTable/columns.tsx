@@ -21,6 +21,13 @@ interface ColumnOptions {
   onToggleVisibility?: (project: Project) => void;
 }
 
+// Helper to get localized description
+function getLocalizedDescription(project: Project, lang: string): string {
+  if (lang === 'de' && project.descriptionDe) return project.descriptionDe;
+  if (lang === 'en' && project.descriptionEn) return project.descriptionEn;
+  return project.descriptionEn || project.descriptionDe || project.description || '';
+}
+
 export function createProjectColumns({
   onEdit,
   onDelete,
@@ -28,7 +35,7 @@ export function createProjectColumns({
   onToggleVisibility,
 }: ColumnOptions = {}): ColumnDef<Project>[] {
   // eslint-disable-next-line react-hooks/rules-of-hooks
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   return [
     {
@@ -86,11 +93,14 @@ export function createProjectColumns({
     {
       accessorKey: "description",
       header: t("projects.table.columns.description"),
-      cell: ({ row }) => (
-        <div className="text-muted-foreground max-w-md truncate text-sm">
-          {row.original.description}
-        </div>
-      ),
+      cell: ({ row }) => {
+        const description = getLocalizedDescription(row.original, i18n.language);
+        return (
+          <div className="text-muted-foreground max-w-md truncate text-sm">
+            {description}
+          </div>
+        );
+      },
     },
     {
       accessorKey: "repositories",

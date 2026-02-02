@@ -36,7 +36,8 @@ export function ProjectDetailDrawer({
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const [name, setName] = useState(project.name);
-  const [description, setDescription] = useState(project.description);
+  const [descriptionEn, setDescriptionEn] = useState(project.descriptionEn || '');
+  const [descriptionDe, setDescriptionDe] = useState(project.descriptionDe || '');
   const [repositories, setRepositories] = useState<string[]>(
     project.repositories || [],
   );
@@ -61,7 +62,8 @@ export function ProjectDetailDrawer({
     
     if (isOpening) {
       setName(project.name);
-      setDescription(project.description);
+      setDescriptionEn(project.descriptionEn || '');
+      setDescriptionDe(project.descriptionDe || '');
       setRepositories(project.repositories || []);
       setAdditionalInfo(
         Object.entries(project.additionalInformation || {}).map(([key, value], index) => ({
@@ -134,7 +136,8 @@ export function ProjectDetailDrawer({
           uuid: project.uuid,
           data: {
             name,
-            description,
+            descriptionEn: descriptionEn.trim() || undefined,
+            descriptionDe: descriptionDe.trim() || undefined,
             repositories: validRepos.length > 0 ? validRepos : [],
             additionalInformation: Object.keys(validAdditionalInfo).length > 0 ? validAdditionalInfo : {},
             index: project.index,
@@ -151,7 +154,8 @@ export function ProjectDetailDrawer({
 
   const handleCancel = () => {
     setName(project.name);
-    setDescription(project.description);
+    setDescriptionEn(project.descriptionEn || '');
+    setDescriptionDe(project.descriptionDe || '');
     setRepositories(project.repositories || []);
     setAdditionalInfo(
       Object.entries(project.additionalInformation || {}).map(([key, value], index) => ({
@@ -188,9 +192,18 @@ export function ProjectDetailDrawer({
               <Separator />
 
               <div className="flex flex-col gap-2">
-                <h3 className="text-sm font-medium">{t("projects.drawer.description")}</h3>
+                <h3 className="text-sm font-medium">{t("projects.drawer.descriptionEn")}</h3>
                 <p className="text-muted-foreground text-sm">
-                  {project.description || t("projects.drawer.noDescription")}
+                  {project.descriptionEn || t("projects.drawer.noDescription")}
+                </p>
+              </div>
+
+              <Separator />
+
+              <div className="flex flex-col gap-2">
+                <h3 className="text-sm font-medium">{t("projects.drawer.descriptionDe")}</h3>
+                <p className="text-muted-foreground text-sm">
+                  {project.descriptionDe || t("projects.drawer.noDescription")}
                 </p>
               </div>
 
@@ -258,13 +271,25 @@ export function ProjectDetailDrawer({
                   />
                 </Field>
                 <Field>
-                  <FieldLabel htmlFor="description">{t("projects.drawer.description")}</FieldLabel>
+                  <FieldLabel htmlFor="descriptionEn">{t("projects.drawer.descriptionEn")}</FieldLabel>
                   <Textarea
-                    id="description"
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
+                    id="descriptionEn"
+                    value={descriptionEn}
+                    onChange={(e) => setDescriptionEn(e.target.value)}
                     disabled={isSaving}
                     rows={4}
+                    placeholder="English description..."
+                  />
+                </Field>
+                <Field>
+                  <FieldLabel htmlFor="descriptionDe">{t("projects.drawer.descriptionDe")}</FieldLabel>
+                  <Textarea
+                    id="descriptionDe"
+                    value={descriptionDe}
+                    onChange={(e) => setDescriptionDe(e.target.value)}
+                    disabled={isSaving}
+                    rows={4}
+                    placeholder="Deutsche Beschreibung..."
                   />
                 </Field>
                 <Field>

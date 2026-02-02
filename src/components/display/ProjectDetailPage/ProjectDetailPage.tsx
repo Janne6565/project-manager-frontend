@@ -7,10 +7,12 @@ import { Separator } from "@/components/ui/separator";
 import { ArrowLeft, Eye, Settings } from "lucide-react";
 import { ContributionsTable } from "@/components/display/ContributionsTable/ContributionsTable";
 import { ProjectDetailDrawer } from "@/components/display/ProjectDetailDrawer/ProjectDetailDrawer";
+import { useLocalizedDescription } from "@/hooks/use-localized-description";
 
 const ProjectDetailPage = ({ project }: { project: Project }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const description = useLocalizedDescription(project);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [drawerEditMode, setDrawerEditMode] = useState(false);
 
@@ -40,7 +42,7 @@ const ProjectDetailPage = ({ project }: { project: Project }) => {
         <div className="flex items-start justify-between gap-4">
           <div className="flex-1 min-w-0">
             <h1 className="text-3xl font-bold truncate">{project.name}</h1>
-            <p className="text-muted-foreground mt-2">{project.description}</p>
+            <p className="text-muted-foreground mt-2">{description}</p>
 
             {/* Additional Information */}
             {project.additionalInformation &&

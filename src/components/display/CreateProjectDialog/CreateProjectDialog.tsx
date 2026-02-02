@@ -33,7 +33,8 @@ export function CreateProjectDialog({
   const projects = useAppSelector((state) => state.projects.projects);
 
   const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
+  const [descriptionEn, setDescriptionEn] = useState("");
+  const [descriptionDe, setDescriptionDe] = useState("");
   const [repositories, setRepositories] = useState<string[]>([initialRepository || ""]);
   const [additionalInfo, setAdditionalInfo] = useState<Array<{ id: string; key: string; value: string }>>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -110,7 +111,8 @@ export function CreateProjectDialog({
       await dispatch(
         createProject({
           name,
-          description,
+          descriptionEn: descriptionEn.trim() || undefined,
+          descriptionDe: descriptionDe.trim() || undefined,
           additionalInformation: Object.keys(validAdditionalInfo).length > 0 ? validAdditionalInfo : undefined,
           repositories: validRepos.length > 0 ? validRepos : undefined,
           index: nextIndex,
@@ -125,7 +127,8 @@ export function CreateProjectDialog({
 
       // Reset form and close dialog after successful creation and data reload
       setName("");
-      setDescription("");
+      setDescriptionEn("");
+      setDescriptionDe("");
       setRepositories([initialRepository || ""]);
       setAdditionalInfo([]);
       onOpenChange(false);
@@ -138,7 +141,8 @@ export function CreateProjectDialog({
 
   const handleCancel = () => {
     setName("");
-    setDescription("");
+    setDescriptionEn("");
+    setDescriptionDe("");
     setRepositories([""]);
     setAdditionalInfo([]);
     onOpenChange(false);
@@ -171,17 +175,30 @@ export function CreateProjectDialog({
             </Field>
 
             <Field>
-              <FieldLabel htmlFor="description">
-                {t("projects.create.descriptionLabel")} <span className="text-destructive">{t("projects.create.required")}</span>
+              <FieldLabel htmlFor="descriptionEn">
+                {t("projects.create.descriptionEn")}
               </FieldLabel>
               <Textarea
-                id="description"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
+                id="descriptionEn"
+                value={descriptionEn}
+                onChange={(e) => setDescriptionEn(e.target.value)}
                 disabled={isSubmitting}
-                required
                 rows={4}
-                placeholder={t("projects.create.descriptionPlaceholder")}
+                placeholder="English description..."
+              />
+            </Field>
+
+            <Field>
+              <FieldLabel htmlFor="descriptionDe">
+                {t("projects.create.descriptionDe")}
+              </FieldLabel>
+              <Textarea
+                id="descriptionDe"
+                value={descriptionDe}
+                onChange={(e) => setDescriptionDe(e.target.value)}
+                disabled={isSubmitting}
+                rows={4}
+                placeholder="Deutsche Beschreibung..."
               />
             </Field>
 
@@ -293,7 +310,7 @@ export function CreateProjectDialog({
           <SheetFooter className="gap-2">
             <Button
               type="submit"
-              disabled={isSubmitting || !name || !description}
+              disabled={isSubmitting || !name}
             >
               {isSubmitting ? t("projects.create.creating") : t("projects.create.createButton")}
             </Button>
