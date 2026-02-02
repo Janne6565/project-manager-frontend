@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { Project } from "@/types/project";
 import { useAppDispatch } from "@/store/hooks";
 import { updateProject } from "@/store/slices/projectsSlice";
@@ -17,7 +17,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import TooltipWrapper from "@/components/ui/tooltip-wrapper.tsx";
+import { Plus, X } from "lucide-react";
 
 interface ProjectDetailDrawerProps {
   project: Project;
@@ -33,16 +33,55 @@ export function ProjectDetailDrawer({
   const dispatch = useAppDispatch();
   const [name, setName] = useState(project.name);
   const [description, setDescription] = useState(project.description);
+  const [repositories, setRepositories] = useState<string[]>(
+    project.repositories || [],
+  );
+  const [projectId, setProjectId] = useState(
+    project.additionalInformation?.projectId || "",
+  );
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+
+  // Reset form state when project changes or drawer opens
+  useEffect(() => {
+    if (open) {
+      setName(project.name);
+      setDescription(project.description);
+      setRepositories(project.repositories || []);
+      setProjectId(project.additionalInformation?.projectId || "");
+      setIsEditing(false);
+    }
+  }, [project, open]);
+
+  const handleAddRepository = () => {
+    setRepositories([...repositories, ""]);
+  };
+
+  const handleRemoveRepository = (index: number) => {
+    setRepositories(repositories.filter((_, i) => i !== index));
+  };
+
+  const handleRepositoryChange = (index: number, value: string) => {
+    const newRepos = [...repositories];
+    newRepos[index] = value;
+    setRepositories(newRepos);
+  };
 
   const handleSave = async () => {
     setIsSaving(true);
     try {
+      // Filter out empty repositories
+      const validRepos = repositories.filter((repo) => repo.trim() !== "");
+
       await dispatch(
         updateProject({
           uuid: project.uuid,
-          data: { name, description },
+          data: {
+            name,
+            description,
+            repositories: validRepos.length > 0 ? validRepos : [],
+            additionalInformation: projectId ? { projectId } : {},
+          },
         }),
       );
       setIsEditing(false);
@@ -56,6 +95,8 @@ export function ProjectDetailDrawer({
   const handleCancel = () => {
     setName(project.name);
     setDescription(project.description);
+    setRepositories(project.repositories || []);
+    setProjectId(project.additionalInformation?.projectId || "");
     setIsEditing(false);
   };
 
@@ -97,17 +138,15 @@ export function ProjectDetailDrawer({
                 <div className="flex flex-col gap-1">
                   {(project.repositories?.length ?? 0) > 0 ? (
                     project.repositories?.map((repo, index) => (
-                      <TooltipWrapper tooltip={repo} asChild>
-                        <a
-                          key={index}
-                          href={repo}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-primary hover:underline text-sm truncate"
-                        >
-                          {repo}
-                        </a>
-                      </TooltipWrapper>
+                      <a
+                        key={index}
+                        href={repo}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-primary hover:underline text-sm truncate"
+                      >
+                        {repo}
+                      </a>
                     ))
                   ) : (
                     <p className="text-muted-foreground text-sm">
@@ -160,6 +199,70 @@ export function ProjectDetailDrawer({
                     disabled={isSaving}
                     rows={4}
                   />
+                </Field>
+                <Field>
+                  <FieldLabel htmlFor="projectId">
+                    Project ID (Optional)
+                  </FieldLabel>
+                  <Input
+                    id="projectId"
+                    value={projectId}
+                    onChange={(e) => setProjectId(e.target.value)}
+                    disabled={isSaving}
+                    placeholder="my-project-id"
+                  />
+                </Field>
+                <Field>
+                  <div className="flex items-center justify-between">
+                    <FieldLabel>Repositories</FieldLabel>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={handleAddRepository}
+                      disabled={isSaving}
+                    >
+                      <Plus className="size-4" />
+                      Add
+                    </Button>
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    {repositories.length > 0 ? (
+                      repositories.map((repo, index) => (
+                        <div key={index} className="flex gap-2">
+                          <Input
+                            value={repo}
+                            onChange={(e) =>
+                              handleRepositoryChange(index, e.target.value)
+                            }
+                            disabled={isSaving}
+                            placeholder="https://github.com/username/repo"
+                          />
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleRemoveRepository(index)}
+                            disabled={isSaving}
+                          >
+                            <X className="size-4" />
+                          </Button>
+                        </div>
+                      ))
+                    ) : (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={handleAddRepository}
+                        disabled={isSaving}
+                        className="w-fit"
+                      >
+                        <Plus className="size-4" />
+                        Add Repository
+                      </Button>
+                    )}
+                  </div>
                 </Field>
               </FieldGroup>
             </form>

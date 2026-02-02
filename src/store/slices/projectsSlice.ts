@@ -54,7 +54,15 @@ export const deleteProject = createAsyncThunk(
 
 export const updateProject = createAsyncThunk(
   'projects/updateProject',
-  async ({ uuid, data }: { uuid: string; data: { name?: string; description?: string } }) => {
+  async ({ uuid, data }: { 
+    uuid: string; 
+    data: { 
+      name?: string; 
+      description?: string;
+      repositories?: string[];
+      additionalInformation?: { projectId?: string; [key: string]: unknown };
+    } 
+  }) => {
     await apiUpdateProject(uuid, data);
     return { uuid, data };
   }

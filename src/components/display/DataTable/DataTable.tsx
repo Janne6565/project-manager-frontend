@@ -1,4 +1,4 @@
-import * as React from 'react';
+import * as React from "react";
 import {
   closestCenter,
   DndContext,
@@ -9,24 +9,24 @@ import {
   useSensors,
   type DragEndEvent,
   type UniqueIdentifier,
-} from '@dnd-kit/core';
-import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
+} from "@dnd-kit/core";
+import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
 import {
   arrayMove,
   SortableContext,
   useSortable,
   verticalListSortingStrategy,
-} from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import {
   flexRender,
   getCoreRowModel,
   useReactTable,
   type ColumnDef,
   type Row,
-} from '@tanstack/react-table';
-import { GripVertical } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+} from "@tanstack/react-table";
+import { GripVertical } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -34,7 +34,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
+} from "@/components/ui/table";
 
 interface DragHandleProps {
   listeners?: any;
@@ -58,21 +58,41 @@ function DragHandle({ listeners, attributes }: DragHandleProps) {
 
 interface DraggableRowProps<TData> {
   row: Row<TData>;
+  onRowClick?: (data: TData) => void;
 }
 
 function DraggableRow<TData extends { uuid: string }>({
   row,
+  onRowClick,
 }: DraggableRowProps<TData>) {
-  const { transform, transition, setNodeRef, isDragging, attributes, listeners } = useSortable({
+  const {
+    transform,
+    transition,
+    setNodeRef,
+    isDragging,
+    attributes,
+    listeners,
+  } = useSortable({
     id: row.original.uuid,
   });
 
+  const handleRowClick = (e: React.MouseEvent<HTMLTableRowElement>) => {
+    // Don't trigger row click if clicking on interactive elements
+    const target = e.target as HTMLElement;
+    const isInteractive = target.closest('button, a, [role="button"]');
+
+    if (!isInteractive && onRowClick) {
+      onRowClick(row.original);
+    }
+  };
+
   return (
     <TableRow
-      data-state={row.getIsSelected() && 'selected'}
+      data-state={row.getIsSelected() && "selected"}
       data-dragging={isDragging}
       ref={setNodeRef}
-      className="relative z-0 data-[dragging=true]:z-10 data-[dragging=true]:opacity-50"
+      onClick={handleRowClick}
+      className="relative z-0 data-[dragging=true]:z-10 data-[dragging=true]:opacity-50 cursor-pointer"
       style={{
         transform: CSS.Transform.toString(transform),
         transition: transition,
@@ -80,9 +100,11 @@ function DraggableRow<TData extends { uuid: string }>({
     >
       {row.getVisibleCells().map((cell) => (
         <TableCell key={cell.id}>
-          {cell.column.id === 'drag' 
-            ? <DragHandle listeners={listeners} attributes={attributes} />
-            : flexRender(cell.column.columnDef.cell, cell.getContext())}
+          {cell.column.id === "drag" ? (
+            <DragHandle listeners={listeners} attributes={attributes} />
+          ) : (
+            flexRender(cell.column.columnDef.cell, cell.getContext())
+          )}
         </TableCell>
       ))}
     </TableRow>
@@ -93,12 +115,14 @@ export interface DataTableProps<TData extends { uuid: string }> {
   data: TData[];
   columns: ColumnDef<TData>[];
   onDragEnd?: (data: TData[]) => void;
+  onRowClick?: (data: TData) => void;
 }
 
 export function DataTable<TData extends { uuid: string }>({
   data,
   columns,
   onDragEnd,
+  onRowClick,
 }: DataTableProps<TData>) {
   const [tableData, setTableData] = React.useState<TData[]>(data);
   const sortableId = React.useId();
@@ -110,12 +134,12 @@ export function DataTable<TData extends { uuid: string }>({
   const sensors = useSensors(
     useSensor(MouseSensor, {}),
     useSensor(TouchSensor, {}),
-    useSensor(KeyboardSensor, {})
+    useSensor(KeyboardSensor, {}),
   );
 
   const dataIds = React.useMemo<UniqueIdentifier[]>(
     () => tableData?.map(({ uuid }) => uuid) || [],
-    [tableData]
+    [tableData],
   );
 
   const table = useReactTable({
@@ -155,7 +179,7 @@ export function DataTable<TData extends { uuid: string }>({
                       ? null
                       : flexRender(
                           header.column.columnDef.header,
-                          header.getContext()
+                          header.getContext(),
                         )}
                   </TableHead>
                 ))}
@@ -169,7 +193,11 @@ export function DataTable<TData extends { uuid: string }>({
                 strategy={verticalListSortingStrategy}
               >
                 {table.getRowModel().rows.map((row) => (
-                  <DraggableRow key={row.id} row={row} />
+                  <DraggableRow
+                    key={row.id}
+                    row={row}
+                    onRowClick={onRowClick}
+                  />
                 ))}
               </SortableContext>
             ) : (

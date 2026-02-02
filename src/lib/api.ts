@@ -65,7 +65,12 @@ export async function deleteProject(uuid: string): Promise<void> {
 
 export async function updateProject(
   uuid: string,
-  data: { name?: string; description?: string }
+  data: { 
+    name?: string; 
+    description?: string;
+    repositories?: string[];
+    additionalInformation?: { projectId?: string; [key: string]: unknown };
+  }
 ): Promise<void> {
   await apiFetch(`/projects/${uuid}`, {
     method: 'PATCH',

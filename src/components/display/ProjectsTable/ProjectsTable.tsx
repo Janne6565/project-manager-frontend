@@ -60,7 +60,12 @@ export function ProjectsTable({ projects }: ProjectsTableProps) {
 
   return (
     <>
-      <DataTable data={projects} columns={columns} onDragEnd={handleDragEnd} />
+      <DataTable 
+        data={projects} 
+        columns={columns} 
+        onDragEnd={handleDragEnd}
+        onRowClick={handleRowClick}
+      />
       {selectedProject && (
         <ProjectDetailDrawer
           project={selectedProject}
