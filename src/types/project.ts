@@ -1,6 +1,14 @@
+import type { Contribution } from './contribution';
+
 export interface Project {
-  id: string;
+  uuid: string;
   name: string;
   description: string;
-  lastTimeTouched: number;
+  additionalInformation?: {
+    projectId?: string;
+    [key: string]: unknown;
+  };
+  repositories: string[];
+  contributions: Contribution[];
 }
+
