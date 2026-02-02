@@ -1,5 +1,6 @@
 import { ThemeProvider } from "@/components/technical/theme-provider.tsx";
 import ProjectsProvider from "@/components/technical/projects-provider.tsx";
+import AuthProvider from "@/components/technical/auth-provider.tsx";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import { SidebarProvider } from "@/components/ui/sidebar.tsx";
 import { createRouter, RouterProvider } from "@tanstack/react-router";
@@ -12,11 +13,13 @@ export function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
-        <SidebarProvider>
-          <ProjectsProvider>
-            <RouterProvider router={router} />
-          </ProjectsProvider>
-        </SidebarProvider>
+        <AuthProvider>
+          <SidebarProvider>
+            <ProjectsProvider>
+              <RouterProvider router={router} />
+            </ProjectsProvider>
+          </SidebarProvider>
+        </AuthProvider>
       </ThemeProvider>
     </QueryClientProvider>
   );
