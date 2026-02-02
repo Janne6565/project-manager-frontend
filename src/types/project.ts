@@ -4,6 +4,7 @@ export interface Project {
   uuid: string;
   name: string;
   description: string;
+  index: number;
   additionalInformation?: {
     projectId?: string;
     [key: string]: unknown;
@@ -11,4 +12,5 @@ export interface Project {
   repositories: string[];
   contributions: Contribution[];
 }
+
 

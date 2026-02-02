@@ -33,3 +33,30 @@ export async function apiFetch<T>(
 
   return response.json();
 }
+
+export async function updateProjectIndex(
+  uuid: string,
+  index: number
+): Promise<void> {
+  await apiFetch(`/projects/${uuid}/index`, {
+    method: 'PATCH',
+    body: JSON.stringify({ index }),
+  });
+}
+
+export async function deleteProject(uuid: string): Promise<void> {
+  await apiFetch(`/projects/${uuid}`, {
+    method: 'DELETE',
+  });
+}
+
+export async function updateProject(
+  uuid: string,
+  data: { name?: string; description?: string }
+): Promise<void> {
+  await apiFetch(`/projects/${uuid}`, {
+    method: 'PATCH',
+    body: JSON.stringify(data),
+  });
+}
+
