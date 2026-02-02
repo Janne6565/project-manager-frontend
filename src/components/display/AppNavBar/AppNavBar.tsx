@@ -8,45 +8,37 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar.tsx";
-import { useNavigate } from "@tanstack/react-router";
-import { GitBranch, Globe, PresentationIcon } from "lucide-react";
+import { Link } from "@tanstack/react-router";
+import { GitBranch, PresentationIcon } from "lucide-react";
 import { type ReactNode } from "react";
+import Logo from "@/components/display/FloatingHeader/Logo/Logo.tsx";
 
 const data: { navMain: { title: string; icon: ReactNode; url: string }[] } = {
   navMain: [
     {
       title: "Projects",
       icon: <PresentationIcon />,
-      url: "#",
+      url: "/",
     },
     {
       title: "Repositories",
       icon: <GitBranch />,
-      url: "#",
+      url: "/repositories",
     },
   ],
 };
 
 const AppNavBar = () => {
-  const navigate = useNavigate();
-
   return (
     <Sidebar className={"transition-all"} variant={"floating"}>
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton
-              size="lg"
-              onClick={() => navigate({ to: "/" })}
-              className={"gap-4 px-3"}
+              asChild
+              className="data-[slot=sidebar-menu-button]:!p-1.5"
             >
-              <div className="[&_svg]:h-6! [&_svg]:w-6!">
-                <Globe />
-              </div>
-              <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">ProjekteJwkk</span>
-                <span className="truncate text-xs">Janne Keipert</span>
-              </div>
+              <Logo />
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
@@ -57,10 +49,10 @@ const AppNavBar = () => {
             {data.navMain.map((item) => (
               <SidebarMenuItem key={item.title}>
                 <SidebarMenuButton asChild>
-                  <a href={item.url}>
+                  <Link to={item.url}>
                     {item.icon}
                     <span>{item.title}</span>
-                  </a>
+                  </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             ))}
