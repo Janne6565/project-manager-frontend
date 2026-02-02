@@ -1,14 +1,13 @@
 export default {
   languages: {
-    de: 'Deutsch',
-    en: 'English',
-    title: 'Languages',
+    de: "Deutsch",
+    en: "English",
+    title: "Languages",
   },
   tooltips: {
-    logo: 'Welcome to my projects :)',
     colorScheme: {
-      toggle: 'Change colorscheme',
+      toggle: "Change colorscheme",
     },
-    languageSelector: 'Change language',
+    languageSelector: "Change language",
   },
 } as const;
