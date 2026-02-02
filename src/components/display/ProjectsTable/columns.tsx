@@ -59,7 +59,7 @@ export function createProjectColumns({
       header: "Repositories",
       cell: ({ row }) => (
         <Badge variant="outline" className="text-muted-foreground px-1.5">
-          {row.original.repositories?.length} repo
+          {row.original.repositories?.length ?? 0} repo
           {row.original.repositories?.length !== 1 ? "s" : ""}
         </Badge>
       ),
@@ -70,7 +70,7 @@ export function createProjectColumns({
       header: "Contributions",
       cell: ({ row }) => (
         <Badge variant="outline" className="text-muted-foreground px-1.5">
-          {row.original.contributions?.length}
+          {row.original.contributions?.length ?? 0}
         </Badge>
       ),
       size: 120,

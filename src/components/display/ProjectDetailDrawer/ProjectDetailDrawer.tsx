@@ -122,7 +122,7 @@ export function ProjectDetailDrawer({
               <div className="flex flex-col gap-2">
                 <h3 className="text-sm font-medium">Contributions</h3>
                 <Badge variant="outline" className="w-fit">
-                  {project.contributions?.length} contribution
+                  {project.contributions?.length ?? 0} contribution
                   {(project.contributions?.length ?? 0) !== 1 ? "s" : ""}
                 </Badge>
               </div>
