@@ -11,7 +11,9 @@ import {
 import { Link } from "@tanstack/react-router";
 import { GitBranch, PresentationIcon } from "lucide-react";
 import { type ReactNode } from "react";
-import Logo from "@/components/display/FloatingHeader/Logo/Logo.tsx";
+import Logo from "@/components/display/Logo/Logo.tsx";
+import ColorSchemeToggleButton from "@/components/display/ColorSchemeToggleButton/ColorSchemeToggleButton.tsx";
+import LanguageSelectorButton from "@/components/display/LanguageSelectorButton/LanguageSelectorButton.tsx";
 
 const data: { navMain: { title: string; icon: ReactNode; url: string }[] } = {
   navMain: [
@@ -59,7 +61,16 @@ const AppNavBar = () => {
           </SidebarMenu>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter />
+      <SidebarFooter>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <div className="flex gap-2 px-2 py-1">
+              <LanguageSelectorButton />
+              <ColorSchemeToggleButton />
+            </div>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarFooter>
     </Sidebar>
   );
 };
