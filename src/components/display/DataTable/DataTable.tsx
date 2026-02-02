@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useTranslation } from "react-i18next";
 import {
   closestCenter,
   DndContext,
@@ -50,6 +51,8 @@ interface DragHandleProps {
 }
 
 function DragHandle({ listeners, attributes }: DragHandleProps) {
+  const { t } = useTranslation();
+  
   return (
     <Button
       {...attributes}
@@ -59,7 +62,7 @@ function DragHandle({ listeners, attributes }: DragHandleProps) {
       className="text-muted-foreground cursor-grab active:cursor-grabbing"
     >
       <GripVertical className="size-4" />
-      <span className="sr-only">Drag to reorder</span>
+      <span className="sr-only">{t("projects.table.tooltips.dragToReorder")}</span>
     </Button>
   );
 }
@@ -132,6 +135,7 @@ export function DataTable<TData extends { uuid: string }>({
   onDragEnd,
   onRowClick,
 }: DataTableProps<TData>) {
+  const { t } = useTranslation();
   const [tableData, setTableData] = React.useState<TData[]>(data);
   const sortableId = React.useId();
   
@@ -234,7 +238,7 @@ export function DataTable<TData extends { uuid: string }>({
                     colSpan={columns.length}
                     className="h-24 text-center"
                   >
-                    No results.
+                    {t("projects.empty.title")}
                   </TableCell>
                 </TableRow>
               )}
@@ -247,7 +251,7 @@ export function DataTable<TData extends { uuid: string }>({
       {table.getRowCount() > 0 && (
         <div className="flex items-center justify-between px-2">
           <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground">Rows per page:</span>
+            <span className="text-sm text-muted-foreground">{t("contributions.table.pagination.rowsPerPage")}</span>
             <Select
               value={table.getState().pagination.pageSize.toString()}
               onValueChange={handlePageSizeChange}
@@ -264,7 +268,11 @@ export function DataTable<TData extends { uuid: string }>({
               </SelectContent>
             </Select>
             <span className="text-sm text-muted-foreground">
-              Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
+              {t("contributions.table.pagination.page", {
+                current: table.getState().pagination.pageIndex + 1,
+                total: table.getPageCount(),
+                count: table.getRowCount()
+              })}
             </span>
           </div>
           <div className="flex items-center gap-2">
@@ -275,7 +283,7 @@ export function DataTable<TData extends { uuid: string }>({
               disabled={!table.getCanPreviousPage()}
             >
               <ChevronLeft className="size-4" />
-              Previous
+              {t("contributions.table.pagination.previous")}
             </Button>
             <Button
               variant="outline"
@@ -283,7 +291,7 @@ export function DataTable<TData extends { uuid: string }>({
               onClick={() => table.nextPage()}
               disabled={!table.getCanNextPage()}
             >
-              Next
+              {t("contributions.table.pagination.next")}
               <ChevronRight className="size-4" />
             </Button>
           </div>

@@ -9,6 +9,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar.tsx";
 import { Link, useNavigate } from "@tanstack/react-router";
+import { useTranslation } from "react-i18next";
 import { GitBranch, LogOut, PresentationIcon } from "lucide-react";
 import { type ReactNode } from "react";
 import Logo from "@/components/display/Logo/Logo.tsx";
@@ -18,24 +19,25 @@ import useAuth from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import TooltipWrapper from "@/components/ui/tooltip-wrapper.tsx";
 
-const data: { navMain: { title: string; icon: ReactNode; url: string }[] } = {
-  navMain: [
-    {
-      title: "Projects",
-      icon: <PresentationIcon />,
-      url: "/",
-    },
-    {
-      title: "Repositories",
-      icon: <GitBranch />,
-      url: "/repositories",
-    },
-  ],
-};
-
 const AppNavBar = () => {
+  const { t } = useTranslation();
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+
+  const data: { navMain: { title: string; icon: ReactNode; url: string }[] } = {
+    navMain: [
+      {
+        title: t("navigation.projects"),
+        icon: <PresentationIcon />,
+        url: "/",
+      },
+      {
+        title: t("navigation.repositories"),
+        icon: <GitBranch />,
+        url: "/repositories",
+      },
+    ],
+  };
 
   const handleLogout = async () => {
     await logout();
@@ -91,7 +93,7 @@ const AppNavBar = () => {
               >
                 {user.username}
               </Button>
-              <TooltipWrapper tooltip={"Logout"} asChild>
+              <TooltipWrapper tooltip={t("auth.logout")} asChild>
                 <Button
                   variant="outline"
                   onClick={handleLogout}

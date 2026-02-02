@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import type { Contribution } from "@/types/contribution";
 import {
   Table,
@@ -25,6 +26,7 @@ interface ContributionsTableProps {
 }
 
 export function ContributionsTable({ contributions }: ContributionsTableProps) {
+  const { t, i18n } = useTranslation();
   const [currentPage, setCurrentPage] = useState(0);
   const [pageSize, setPageSize] = useState<number>(() => {
     const stored = localStorage.getItem("contributionsTable.pageSize");
@@ -53,10 +55,10 @@ export function ContributionsTable({ contributions }: ContributionsTableProps) {
     return (
       <div className="flex flex-col items-center justify-center rounded-lg border border-dashed py-12">
         <div className="text-muted-foreground font-medium">
-          No contributions yet
+          {t("contributions.empty.title")}
         </div>
         <div className="text-muted-foreground text-sm mt-1">
-          Contributions will appear here once they're added to this project
+          {t("contributions.empty.description")}
         </div>
       </div>
     );
@@ -68,17 +70,17 @@ export function ContributionsTable({ contributions }: ContributionsTableProps) {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Date</TableHead>
-              <TableHead>Type</TableHead>
-              <TableHead>Repository</TableHead>
-              <TableHead>Reference</TableHead>
+              <TableHead>{t("contributions.table.columns.date")}</TableHead>
+              <TableHead>{t("contributions.table.columns.type")}</TableHead>
+              <TableHead>{t("contributions.table.columns.repository")}</TableHead>
+              <TableHead>{t("contributions.table.columns.reference")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {currentContributions.map((contribution, index) => (
               <TableRow key={`${currentPage}-${index}`}>
                 <TableCell className="font-medium">
-                  {formatDate(contribution.day)}
+                  {formatDate(contribution.day, i18n.language)}
                 </TableCell>
                 <TableCell>
                   <ContributionTypeBadge type={contribution.type} />
@@ -93,7 +95,7 @@ export function ContributionsTable({ contributions }: ContributionsTableProps) {
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-1 text-primary hover:underline"
                   >
-                    View
+                    {t("contributions.table.viewLink")}
                     <ExternalLink className="size-3" />
                   </a>
                 </TableCell>
@@ -108,7 +110,7 @@ export function ContributionsTable({ contributions }: ContributionsTableProps) {
         <div className="flex items-center justify-between px-2">
           <div className="flex items-center gap-2">
             <span className="text-sm text-muted-foreground">
-              Rows per page:
+              {t("contributions.table.pagination.rowsPerPage")}
             </span>
             <Select
               value={pageSize.toString()}
@@ -126,8 +128,11 @@ export function ContributionsTable({ contributions }: ContributionsTableProps) {
               </SelectContent>
             </Select>
             <span className="text-sm text-muted-foreground">
-              Page {currentPage + 1} of {totalPages} (
-              {sortedContributions.length} total)
+              {t("contributions.table.pagination.page", {
+                current: currentPage + 1,
+                total: totalPages,
+                count: sortedContributions.length
+              })}
             </span>
           </div>
           <div className="flex items-center gap-2">
@@ -138,7 +143,7 @@ export function ContributionsTable({ contributions }: ContributionsTableProps) {
               disabled={currentPage === 0}
             >
               <ChevronLeft className="size-4" />
-              Previous
+              {t("contributions.table.pagination.previous")}
             </Button>
             <Button
               variant="outline"
@@ -146,7 +151,7 @@ export function ContributionsTable({ contributions }: ContributionsTableProps) {
               onClick={() => setCurrentPage(currentPage + 1)}
               disabled={currentPage >= totalPages - 1}
             >
-              Next
+              {t("contributions.table.pagination.next")}
               <ChevronRight className="size-4" />
             </Button>
           </div>
@@ -157,10 +162,12 @@ export function ContributionsTable({ contributions }: ContributionsTableProps) {
 }
 
 function ContributionTypeBadge({ type }: { type: Contribution["type"] }) {
+  const { t } = useTranslation();
+  
   const config = {
-    PULL_REQUEST: { label: "Pull Request", variant: "default" as const },
-    COMMIT: { label: "Commit", variant: "secondary" as const },
-    ISSUE: { label: "Issue", variant: "outline" as const },
+    PULL_REQUEST: { label: t("contributions.table.types.pullRequest"), variant: "default" as const },
+    COMMIT: { label: t("contributions.table.types.commit"), variant: "secondary" as const },
+    ISSUE: { label: t("contributions.table.types.issue"), variant: "outline" as const },
   };
 
   const { label, variant } = config[type];
@@ -168,9 +175,9 @@ function ContributionTypeBadge({ type }: { type: Contribution["type"] }) {
   return <Badge variant={variant}>{label}</Badge>;
 }
 
-function formatDate(dateString: string): string {
+function formatDate(dateString: string, locale: string): string {
   const date = new Date(dateString);
-  return date.toLocaleDateString("en-US", {
+  return date.toLocaleDateString(locale, {
     month: "short",
     day: "numeric",
     year: "numeric",

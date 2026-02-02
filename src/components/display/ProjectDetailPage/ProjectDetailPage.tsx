@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import type { Project } from "@/types/project.ts";
 import { useNavigate } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
@@ -8,6 +9,7 @@ import { ContributionsTable } from "@/components/display/ContributionsTable/Cont
 import { ProjectDetailDrawer } from "@/components/display/ProjectDetailDrawer/ProjectDetailDrawer";
 
 const ProjectDetailPage = ({ project }: { project: Project }) => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [drawerEditMode, setDrawerEditMode] = useState(false);
@@ -32,7 +34,7 @@ const ProjectDetailPage = ({ project }: { project: Project }) => {
           onClick={() => navigate({ to: "/" })}
         >
           <ArrowLeft className="size-4" />
-          Back to Projects
+          {t("projects.detail.backToProjects")}
         </Button>
 
         <div className="flex items-start justify-between gap-4">
@@ -64,11 +66,11 @@ const ProjectDetailPage = ({ project }: { project: Project }) => {
           <div className="flex gap-2 shrink-0">
             <Button variant="outline" onClick={handleSeeDetails}>
               <Eye className="size-4" />
-              See Details
+              {t("projects.detail.seeDetails")}
             </Button>
             <Button onClick={handleEditConfiguration}>
               <Settings className="size-4" />
-              Edit Configuration
+              {t("projects.detail.editConfiguration")}
             </Button>
           </div>
         </div>
@@ -79,12 +81,9 @@ const ProjectDetailPage = ({ project }: { project: Project }) => {
       {/* Contributions Section */}
       <div className="flex flex-col gap-4">
         <div>
-          <h2 className="text-2xl font-bold">Contributions</h2>
+          <h2 className="text-2xl font-bold">{t("projects.detail.contributionsTitle")}</h2>
           <p className="text-muted-foreground mt-1">
-            {(project.contributions || []).length}{" "}
-            {(project.contributions || []).length === 1
-              ? "contribution"
-              : "contributions"}
+            {t("projects.detail.contributionCount", { count: (project.contributions || []).length })}
           </p>
         </div>
         <ContributionsTable contributions={project.contributions || []} />

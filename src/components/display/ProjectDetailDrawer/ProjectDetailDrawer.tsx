@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import type { Project } from "@/types/project";
 import { useAppDispatch } from "@/store/hooks";
 import { updateProject } from "@/store/slices/projectsSlice";
@@ -32,6 +33,7 @@ export function ProjectDetailDrawer({
   onOpenChange,
   initialEditMode = false,
 }: ProjectDetailDrawerProps) {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const [name, setName] = useState(project.name);
   const [description, setDescription] = useState(project.description);
@@ -166,12 +168,12 @@ export function ProjectDetailDrawer({
       <SheetContent className="sm:max-w-lg overflow-y-auto">
         <SheetHeader>
           <SheetTitle>
-            {isEditing ? "Edit Project" : "Project Details"}
+            {isEditing ? t("projects.drawer.titleEdit") : t("projects.drawer.titleView")}
           </SheetTitle>
           <SheetDescription>
             {isEditing
-              ? "Make changes to the project details"
-              : "View project information and statistics"}
+              ? t("projects.drawer.descriptionEdit")
+              : t("projects.drawer.descriptionView")}
           </SheetDescription>
         </SheetHeader>
 
@@ -179,23 +181,23 @@ export function ProjectDetailDrawer({
           {!isEditing ? (
             <>
               <div className="flex flex-col gap-2">
-                <h3 className="text-sm font-medium">Name</h3>
+                <h3 className="text-sm font-medium">{t("projects.drawer.name")}</h3>
                 <p className="text-sm">{project.name}</p>
               </div>
 
               <Separator />
 
               <div className="flex flex-col gap-2">
-                <h3 className="text-sm font-medium">Description</h3>
+                <h3 className="text-sm font-medium">{t("projects.drawer.description")}</h3>
                 <p className="text-muted-foreground text-sm">
-                  {project.description || "No description provided"}
+                  {project.description || t("projects.drawer.noDescription")}
                 </p>
               </div>
 
               <Separator />
 
               <div className="flex flex-col gap-2">
-                <h3 className="text-sm font-medium">Repositories</h3>
+                <h3 className="text-sm font-medium">{t("projects.drawer.repositories")}</h3>
                 <div className="flex flex-col gap-1">
                   {(project.repositories?.length ?? 0) > 0 ? (
                     project.repositories?.map((repo, index) => (
@@ -211,7 +213,7 @@ export function ProjectDetailDrawer({
                     ))
                   ) : (
                     <p className="text-muted-foreground text-sm">
-                      No repositories linked
+                      {t("projects.drawer.noRepositories")}
                     </p>
                   )}
                 </div>
@@ -220,10 +222,9 @@ export function ProjectDetailDrawer({
               <Separator />
 
               <div className="flex flex-col gap-2">
-                <h3 className="text-sm font-medium">Contributions</h3>
+                <h3 className="text-sm font-medium">{t("projects.drawer.contributions")}</h3>
                 <Badge variant="outline" className="w-fit">
-                  {project.contributions?.length ?? 0} contribution
-                  {(project.contributions?.length ?? 0) !== 1 ? "s" : ""}
+                  {t("projects.drawer.contributionCount", { count: project.contributions?.length ?? 0 })}
                 </Badge>
               </div>
 
@@ -231,7 +232,7 @@ export function ProjectDetailDrawer({
                 <>
                   <Separator />
                   <div className="flex flex-col gap-2">
-                    <h3 className="text-sm font-medium">Additional Information</h3>
+                    <h3 className="text-sm font-medium">{t("projects.drawer.additionalInfo")}</h3>
                     <div className="flex flex-col gap-2">
                       {Object.entries(project.additionalInformation).map(([key, value]) => (
                         <div key={key} className="flex items-start gap-2">
@@ -248,7 +249,7 @@ export function ProjectDetailDrawer({
             <form onSubmit={(e) => e.preventDefault()}>
               <FieldGroup>
                 <Field>
-                  <FieldLabel htmlFor="name">Name</FieldLabel>
+                  <FieldLabel htmlFor="name">{t("projects.drawer.name")}</FieldLabel>
                   <Input
                     id="name"
                     value={name}
@@ -257,7 +258,7 @@ export function ProjectDetailDrawer({
                   />
                 </Field>
                 <Field>
-                  <FieldLabel htmlFor="description">Description</FieldLabel>
+                  <FieldLabel htmlFor="description">{t("projects.drawer.description")}</FieldLabel>
                   <Textarea
                     id="description"
                     value={description}
@@ -268,7 +269,7 @@ export function ProjectDetailDrawer({
                 </Field>
                 <Field>
                   <div className="flex items-center justify-between">
-                    <FieldLabel>Repositories</FieldLabel>
+                    <FieldLabel>{t("projects.drawer.repositories")}</FieldLabel>
                     <Button
                       type="button"
                       variant="ghost"
@@ -277,7 +278,7 @@ export function ProjectDetailDrawer({
                       disabled={isSaving}
                     >
                       <Plus className="size-4" />
-                      Add
+                      {t("common.add")}
                     </Button>
                   </div>
                   <div className="flex flex-col gap-2">
@@ -290,7 +291,7 @@ export function ProjectDetailDrawer({
                               handleRepositoryChange(index, e.target.value)
                             }
                             disabled={isSaving}
-                            placeholder="https://github.com/username/repo"
+                            placeholder={t("projects.drawer.repositoryPlaceholder")}
                           />
                           <Button
                             type="button"
@@ -313,14 +314,14 @@ export function ProjectDetailDrawer({
                         className="w-fit"
                       >
                         <Plus className="size-4" />
-                        Add Repository
+                        {t("projects.drawer.addRepository")}
                       </Button>
                     )}
                   </div>
                 </Field>
                 <Field>
                   <div className="flex items-center justify-between">
-                    <FieldLabel>Additional Information</FieldLabel>
+                    <FieldLabel>{t("projects.drawer.additionalInfo")}</FieldLabel>
                     <Button
                       type="button"
                       variant="ghost"
@@ -329,7 +330,7 @@ export function ProjectDetailDrawer({
                       disabled={isSaving}
                     >
                       <Plus className="size-4" />
-                      Add
+                      {t("common.add")}
                     </Button>
                   </div>
                   <div className="flex flex-col gap-2">
@@ -342,7 +343,7 @@ export function ProjectDetailDrawer({
                               handleAdditionalInfoKeyChange(item.id, e.target.value)
                             }
                             disabled={isSaving}
-                            placeholder="Key"
+                            placeholder={t("projects.drawer.keyPlaceholder")}
                             className="w-1/3"
                           />
                           <Input
@@ -351,7 +352,7 @@ export function ProjectDetailDrawer({
                               handleAdditionalInfoValueChange(item.id, e.target.value)
                             }
                             disabled={isSaving}
-                            placeholder="Value"
+                            placeholder={t("projects.drawer.valuePlaceholder")}
                             className="flex-1"
                           />
                           <Button
@@ -375,7 +376,7 @@ export function ProjectDetailDrawer({
                         className="w-fit"
                       >
                         <Plus className="size-4" />
-                        Add Attribute
+                        {t("projects.drawer.addAttribute")}
                       </Button>
                     )}
                   </div>
@@ -388,22 +389,22 @@ export function ProjectDetailDrawer({
         <SheetFooter className="gap-2">
           {!isEditing ? (
             <>
-              <Button onClick={() => setIsEditing(true)}>Edit</Button>
+              <Button onClick={() => setIsEditing(true)}>{t("projects.drawer.editButton")}</Button>
               <SheetClose asChild>
-                <Button variant="outline">Close</Button>
+                <Button variant="outline">{t("projects.drawer.close")}</Button>
               </SheetClose>
             </>
           ) : (
             <>
               <Button onClick={handleSave} disabled={isSaving}>
-                {isSaving ? "Saving..." : "Save Changes"}
+                {isSaving ? t("projects.drawer.saving") : t("projects.drawer.saveButton")}
               </Button>
               <Button
                 variant="outline"
                 onClick={handleCancel}
                 disabled={isSaving}
               >
-                Cancel
+                {t("projects.drawer.cancel")}
               </Button>
             </>
           )}

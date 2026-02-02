@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { createProject, fetchProjects } from "@/store/slices/projectsSlice";
 import { fetchUnassignedContributions } from "@/store/slices/contributionsSlice";
@@ -27,6 +28,7 @@ export function CreateProjectDialog({
   onOpenChange,
   initialRepository,
 }: CreateProjectDialogProps) {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const projects = useAppSelector((state) => state.projects.projects);
 
@@ -146,9 +148,9 @@ export function CreateProjectDialog({
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent className="sm:max-w-lg overflow-y-auto">
         <SheetHeader>
-          <SheetTitle>Create New Project</SheetTitle>
+          <SheetTitle>{t("projects.create.title")}</SheetTitle>
           <SheetDescription>
-            Add a new project to your workspace
+            {t("projects.create.description")}
           </SheetDescription>
         </SheetHeader>
 
@@ -156,7 +158,7 @@ export function CreateProjectDialog({
           <FieldGroup>
             <Field>
               <FieldLabel htmlFor="name">
-                Name <span className="text-destructive">*</span>
+                {t("projects.create.name")} <span className="text-destructive">{t("projects.create.required")}</span>
               </FieldLabel>
               <Input
                 id="name"
@@ -164,13 +166,13 @@ export function CreateProjectDialog({
                 onChange={(e) => setName(e.target.value)}
                 disabled={isSubmitting}
                 required
-                placeholder="My Awesome Project"
+                placeholder={t("projects.create.namePlaceholder")}
               />
             </Field>
 
             <Field>
               <FieldLabel htmlFor="description">
-                Description <span className="text-destructive">*</span>
+                {t("projects.create.descriptionLabel")} <span className="text-destructive">{t("projects.create.required")}</span>
               </FieldLabel>
               <Textarea
                 id="description"
@@ -179,13 +181,13 @@ export function CreateProjectDialog({
                 disabled={isSubmitting}
                 required
                 rows={4}
-                placeholder="A brief description of your project..."
+                placeholder={t("projects.create.descriptionPlaceholder")}
               />
             </Field>
 
             <Field>
               <div className="flex items-center justify-between">
-                <FieldLabel>Repositories (Optional)</FieldLabel>
+                <FieldLabel>{t("projects.create.repositories")}</FieldLabel>
                 <Button
                   type="button"
                   variant="ghost"
@@ -194,7 +196,7 @@ export function CreateProjectDialog({
                   disabled={isSubmitting}
                 >
                   <Plus className="size-4" />
-                  Add
+                  {t("projects.create.addRepository")}
                 </Button>
               </div>
               <div className="flex flex-col gap-2">
@@ -206,7 +208,7 @@ export function CreateProjectDialog({
                         handleRepositoryChange(index, e.target.value)
                       }
                       disabled={isSubmitting}
-                      placeholder="https://github.com/username/repo"
+                      placeholder={t("projects.create.repositoriesPlaceholder")}
                     />
                     {repositories.length > 1 && (
                       <Button
@@ -226,7 +228,7 @@ export function CreateProjectDialog({
 
             <Field>
               <div className="flex items-center justify-between">
-                <FieldLabel>Additional Information (Optional)</FieldLabel>
+                <FieldLabel>{t("projects.create.additionalInfo")}</FieldLabel>
                 <Button
                   type="button"
                   variant="ghost"
@@ -235,7 +237,7 @@ export function CreateProjectDialog({
                   disabled={isSubmitting}
                 >
                   <Plus className="size-4" />
-                  Add
+                  {t("projects.create.addButton")}
                 </Button>
               </div>
               <div className="flex flex-col gap-2">
@@ -248,7 +250,7 @@ export function CreateProjectDialog({
                           handleAdditionalInfoKeyChange(item.id, e.target.value)
                         }
                         disabled={isSubmitting}
-                        placeholder="Key"
+                        placeholder={t("projects.create.keyPlaceholder")}
                         className="w-1/3"
                       />
                       <Input
@@ -257,7 +259,7 @@ export function CreateProjectDialog({
                           handleAdditionalInfoValueChange(item.id, e.target.value)
                         }
                         disabled={isSubmitting}
-                        placeholder="Value"
+                        placeholder={t("projects.create.valuePlaceholder")}
                         className="flex-1"
                       />
                       <Button
@@ -281,7 +283,7 @@ export function CreateProjectDialog({
                     className="w-fit"
                   >
                     <Plus className="size-4" />
-                    Add Attribute
+                    {t("projects.create.addAttribute")}
                   </Button>
                 )}
               </div>
@@ -293,7 +295,7 @@ export function CreateProjectDialog({
               type="submit"
               disabled={isSubmitting || !name || !description}
             >
-              {isSubmitting ? "Creating..." : "Create Project"}
+              {isSubmitting ? t("projects.create.creating") : t("projects.create.createButton")}
             </Button>
             <Button
               type="button"
@@ -301,7 +303,7 @@ export function CreateProjectDialog({
               onClick={handleCancel}
               disabled={isSubmitting}
             >
-              Cancel
+              {t("projects.create.cancel")}
             </Button>
           </SheetFooter>
         </form>

@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useTranslation } from "react-i18next";
 import { ProtectedRoute } from "@/components/technical/protected-route";
 import { useAppSelector } from "@/store/hooks";
 import { useMemo } from "react";
@@ -19,6 +20,7 @@ function RepositoriesPage() {
 }
 
 function RepositoriesContent() {
+  const { t } = useTranslation();
   const { contributions, loading, error } = useAppSelector(
     (state) => state.contributions
   );
@@ -33,7 +35,7 @@ function RepositoriesContent() {
       <div className="flex min-h-[60vh] items-center justify-center">
         <div className="flex flex-col items-center gap-4">
           <Loader2 className="size-8 animate-spin text-muted-foreground" />
-          <div className="text-muted-foreground">Loading contributions...</div>
+          <div className="text-muted-foreground">{t("repositories.loading")}</div>
         </div>
       </div>
     );
@@ -47,7 +49,7 @@ function RepositoriesContent() {
             <AlertCircle className="size-8 text-destructive" />
           </div>
           <div className="space-y-2">
-            <h2 className="text-2xl font-bold">Failed to Load Contributions</h2>
+            <h2 className="text-2xl font-bold">{t("repositories.errorTitle")}</h2>
             <p className="text-muted-foreground">{error}</p>
           </div>
         </div>
@@ -58,19 +60,19 @@ function RepositoriesContent() {
   return (
     <div className="flex flex-col gap-6 p-6">
       <div>
-        <h1 className="text-3xl font-bold">Repositories</h1>
+        <h1 className="text-3xl font-bold">{t("repositories.title")}</h1>
         <p className="text-muted-foreground mt-1">
-          Repositories with unassigned contributions ({aggregatedRepositories.length} repositories)
+          {t("repositories.description", { count: aggregatedRepositories.length })}
         </p>
       </div>
 
       {aggregatedRepositories.length === 0 ? (
         <div className="flex flex-col items-center justify-center rounded-lg border border-dashed py-12">
           <div className="text-muted-foreground font-medium">
-            No unassigned contributions
+            {t("repositories.empty.title")}
           </div>
           <div className="text-muted-foreground text-sm mt-1">
-            All contributions are assigned to projects
+            {t("repositories.empty.description")}
           </div>
         </div>
       ) : (

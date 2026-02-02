@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from "react";
 import { useNavigate } from "@tanstack/react-router";
+import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -22,6 +23,7 @@ export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
+  const { t } = useTranslation();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [localError, setLocalError] = useState<string | null>(null);
@@ -41,7 +43,7 @@ export function LoginForm({
       navigate({ to: "/" });
     } catch (err) {
       setLocalError(
-        err instanceof Error ? err.message : "Login failed. Please try again.",
+        err instanceof Error ? err.message : t("auth.login.errorDefault"),
       );
     } finally {
       setIsSubmitting(false);
@@ -52,20 +54,20 @@ export function LoginForm({
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
         <CardHeader>
-          <CardTitle>Login to your account</CardTitle>
+          <CardTitle>{t("auth.login.title")}</CardTitle>
           <CardDescription>
-            Enter your username and password below to access your account
+            {t("auth.login.description")}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} noValidate>
             <FieldGroup>
               <Field>
-                <FieldLabel htmlFor="username">Username</FieldLabel>
+                <FieldLabel htmlFor="username">{t("auth.login.username")}</FieldLabel>
                 <Input
                   id="username"
                   type="text"
-                  placeholder="janne"
+                  placeholder={t("auth.login.usernamePlaceholder")}
                   autoComplete="username"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
@@ -73,11 +75,11 @@ export function LoginForm({
                 />
               </Field>
               <Field>
-                <FieldLabel htmlFor="password">Password</FieldLabel>
+                <FieldLabel htmlFor="password">{t("auth.login.password")}</FieldLabel>
                 <Input
                   id="password"
                   type="password"
-                  placeholder="password"
+                  placeholder={t("auth.login.passwordPlaceholder")}
                   autoComplete="current-password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -91,7 +93,7 @@ export function LoginForm({
               )}
               <Field>
                 <Button type="submit" disabled={isSubmitting}>
-                  {isSubmitting ? "Logging in..." : "Login"}
+                  {isSubmitting ? t("auth.login.loggingIn") : t("auth.login.loginButton")}
                 </Button>
               </Field>
             </FieldGroup>
