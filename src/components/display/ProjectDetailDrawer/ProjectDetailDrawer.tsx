@@ -38,8 +38,13 @@ export function ProjectDetailDrawer({
   const [repositories, setRepositories] = useState<string[]>(
     project.repositories || [],
   );
-  const [projectId, setProjectId] = useState(
-    project.additionalInformation?.projectId || "",
+  // Store additional info as array with stable IDs for React keys
+  const [additionalInfo, setAdditionalInfo] = useState<Array<{ id: string; key: string; value: string }>>(
+    Object.entries(project.additionalInformation || {}).map(([key, value], index) => ({
+      id: `${Date.now()}-${index}`,
+      key,
+      value,
+    }))
   );
   const [isEditing, setIsEditing] = useState(initialEditMode);
   const [isSaving, setIsSaving] = useState(false);
@@ -56,7 +61,13 @@ export function ProjectDetailDrawer({
       setName(project.name);
       setDescription(project.description);
       setRepositories(project.repositories || []);
-      setProjectId(project.additionalInformation?.projectId || "");
+      setAdditionalInfo(
+        Object.entries(project.additionalInformation || {}).map(([key, value], index) => ({
+          id: `${Date.now()}-${index}`,
+          key,
+          value,
+        }))
+      );
       setIsEditing(initialEditMode);
     }
   }, [project, open, initialEditMode]);
@@ -75,11 +86,46 @@ export function ProjectDetailDrawer({
     setRepositories(newRepos);
   };
 
+  const handleAddAdditionalInfo = () => {
+    setAdditionalInfo([
+      ...additionalInfo,
+      { id: `${Date.now()}-${additionalInfo.length}`, key: "", value: "" },
+    ]);
+  };
+
+  const handleRemoveAdditionalInfo = (id: string) => {
+    setAdditionalInfo(additionalInfo.filter((item) => item.id !== id));
+  };
+
+  const handleAdditionalInfoKeyChange = (id: string, newKey: string) => {
+    setAdditionalInfo(
+      additionalInfo.map((item) =>
+        item.id === id ? { ...item, key: newKey } : item
+      )
+    );
+  };
+
+  const handleAdditionalInfoValueChange = (id: string, newValue: string) => {
+    setAdditionalInfo(
+      additionalInfo.map((item) =>
+        item.id === id ? { ...item, value: newValue } : item
+      )
+    );
+  };
+
   const handleSave = async () => {
     setIsSaving(true);
     try {
       // Filter out empty repositories
       const validRepos = repositories.filter((repo) => repo.trim() !== "");
+
+      // Filter out empty additional info entries and convert back to object
+      const validAdditionalInfo: Record<string, string> = {};
+      additionalInfo.forEach(({ key, value }) => {
+        if (key.trim() !== "" && value.trim() !== "") {
+          validAdditionalInfo[key.trim()] = value.trim();
+        }
+      });
 
       await dispatch(
         updateProject({
@@ -88,7 +134,7 @@ export function ProjectDetailDrawer({
             name,
             description,
             repositories: validRepos.length > 0 ? validRepos : [],
-            additionalInformation: projectId ? { projectId } : {},
+            additionalInformation: Object.keys(validAdditionalInfo).length > 0 ? validAdditionalInfo : {},
           },
         }),
       );
@@ -104,7 +150,13 @@ export function ProjectDetailDrawer({
     setName(project.name);
     setDescription(project.description);
     setRepositories(project.repositories || []);
-    setProjectId(project.additionalInformation?.projectId || "");
+    setAdditionalInfo(
+      Object.entries(project.additionalInformation || {}).map(([key, value], index) => ({
+        id: `${Date.now()}-${index}`,
+        key,
+        value,
+      }))
+    );
     setIsEditing(false);
   };
 
@@ -174,14 +226,19 @@ export function ProjectDetailDrawer({
                 </Badge>
               </div>
 
-              {project.additionalInformation?.projectId && (
+              {project.additionalInformation && Object.keys(project.additionalInformation).length > 0 && (
                 <>
                   <Separator />
                   <div className="flex flex-col gap-2">
-                    <h3 className="text-sm font-medium">Project ID</h3>
-                    <p className="text-muted-foreground text-sm">
-                      {project.additionalInformation.projectId}
-                    </p>
+                    <h3 className="text-sm font-medium">Additional Information</h3>
+                    <div className="flex flex-col gap-2">
+                      {Object.entries(project.additionalInformation).map(([key, value]) => (
+                        <div key={key} className="flex items-start gap-2">
+                          <span className="text-sm font-medium text-muted-foreground min-w-[100px]">{key}:</span>
+                          <span className="text-sm">{value}</span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </>
               )}
@@ -206,18 +263,6 @@ export function ProjectDetailDrawer({
                     onChange={(e) => setDescription(e.target.value)}
                     disabled={isSaving}
                     rows={4}
-                  />
-                </Field>
-                <Field>
-                  <FieldLabel htmlFor="projectId">
-                    Project ID (Optional)
-                  </FieldLabel>
-                  <Input
-                    id="projectId"
-                    value={projectId}
-                    onChange={(e) => setProjectId(e.target.value)}
-                    disabled={isSaving}
-                    placeholder="my-project-id"
                   />
                 </Field>
                 <Field>
@@ -268,6 +313,68 @@ export function ProjectDetailDrawer({
                       >
                         <Plus className="size-4" />
                         Add Repository
+                      </Button>
+                    )}
+                  </div>
+                </Field>
+                <Field>
+                  <div className="flex items-center justify-between">
+                    <FieldLabel>Additional Information</FieldLabel>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={handleAddAdditionalInfo}
+                      disabled={isSaving}
+                    >
+                      <Plus className="size-4" />
+                      Add
+                    </Button>
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    {additionalInfo.length > 0 ? (
+                      additionalInfo.map((item) => (
+                        <div key={item.id} className="flex gap-2">
+                          <Input
+                            value={item.key}
+                            onChange={(e) =>
+                              handleAdditionalInfoKeyChange(item.id, e.target.value)
+                            }
+                            disabled={isSaving}
+                            placeholder="Key"
+                            className="w-1/3"
+                          />
+                          <Input
+                            value={item.value}
+                            onChange={(e) =>
+                              handleAdditionalInfoValueChange(item.id, e.target.value)
+                            }
+                            disabled={isSaving}
+                            placeholder="Value"
+                            className="flex-1"
+                          />
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleRemoveAdditionalInfo(item.id)}
+                            disabled={isSaving}
+                          >
+                            <X className="size-4" />
+                          </Button>
+                        </div>
+                      ))
+                    ) : (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={handleAddAdditionalInfo}
+                        disabled={isSaving}
+                        className="w-fit"
+                      >
+                        <Plus className="size-4" />
+                        Add Attribute
                       </Button>
                     )}
                   </div>

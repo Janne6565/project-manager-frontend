@@ -6,8 +6,7 @@ export interface Project {
   description: string;
   index: number;
   additionalInformation?: {
-    projectId?: string;
-    [key: string]: unknown;
+    [key: string]: string;
   };
   repositories?: string[];
   contributions?: Contribution[];

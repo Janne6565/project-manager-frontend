@@ -21,12 +21,20 @@ import { CSS } from "@dnd-kit/utilities";
 import {
   flexRender,
   getCoreRowModel,
+  getPaginationRowModel,
   useReactTable,
   type ColumnDef,
   type Row,
 } from "@tanstack/react-table";
-import { GripVertical } from "lucide-react";
+import { GripVertical, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Table,
   TableBody,
@@ -126,6 +134,12 @@ export function DataTable<TData extends { uuid: string }>({
 }: DataTableProps<TData>) {
   const [tableData, setTableData] = React.useState<TData[]>(data);
   const sortableId = React.useId();
+  
+  // Load page size from localStorage or default to 10
+  const [pageSize, setPageSize] = React.useState<number>(() => {
+    const stored = localStorage.getItem('dataTable.pageSize');
+    return stored ? Number(stored) : 10;
+  });
 
   React.useEffect(() => {
     setTableData(data);
@@ -147,6 +161,12 @@ export function DataTable<TData extends { uuid: string }>({
     columns,
     getRowId: (row) => row.uuid,
     getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    initialState: {
+      pagination: {
+        pageSize: pageSize,
+      },
+    },
   });
 
   const handleDragEnd = (event: DragEndEvent) => {
@@ -160,59 +180,115 @@ export function DataTable<TData extends { uuid: string }>({
     }
   };
 
+  const handlePageSizeChange = (value: string) => {
+    const newSize = Number(value);
+    setPageSize(newSize);
+    localStorage.setItem('dataTable.pageSize', value);
+    table.setPageSize(newSize);
+  };
+
   return (
-    <div className="overflow-hidden rounded-lg border">
-      <DndContext
-        collisionDetection={closestCenter}
-        modifiers={[restrictToVerticalAxis]}
-        onDragEnd={handleDragEnd}
-        sensors={sensors}
-        id={sortableId}
-      >
-        <Table>
-          <TableHeader className="bg-muted sticky top-0 z-10">
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id} colSpan={header.colSpan}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext(),
-                        )}
-                  </TableHead>
-                ))}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              <SortableContext
-                items={dataIds}
-                strategy={verticalListSortingStrategy}
-              >
-                {table.getRowModel().rows.map((row) => (
-                  <DraggableRow
-                    key={row.id}
-                    row={row}
-                    onRowClick={onRowClick}
-                  />
-                ))}
-              </SortableContext>
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
+    <div className="space-y-4">
+      <div className="overflow-hidden rounded-lg border">
+        <DndContext
+          collisionDetection={closestCenter}
+          modifiers={[restrictToVerticalAxis]}
+          onDragEnd={handleDragEnd}
+          sensors={sensors}
+          id={sortableId}
+        >
+          <Table>
+            <TableHeader className="bg-muted sticky top-0 z-10">
+              {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => (
+                    <TableHead key={header.id} colSpan={header.colSpan}>
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext(),
+                          )}
+                    </TableHead>
+                  ))}
+                </TableRow>
+              ))}
+            </TableHeader>
+            <TableBody>
+              {table.getRowModel().rows?.length ? (
+                <SortableContext
+                  items={dataIds}
+                  strategy={verticalListSortingStrategy}
                 >
-                  No results.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </DndContext>
+                  {table.getRowModel().rows.map((row) => (
+                    <DraggableRow
+                      key={row.id}
+                      row={row}
+                      onRowClick={onRowClick}
+                    />
+                  ))}
+                </SortableContext>
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-24 text-center"
+                  >
+                    No results.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </DndContext>
+      </div>
+      
+      {/* Pagination Controls */}
+      {table.getRowCount() > 0 && (
+        <div className="flex items-center justify-between px-2">
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-muted-foreground">Rows per page:</span>
+            <Select
+              value={table.getState().pagination.pageSize.toString()}
+              onValueChange={handlePageSizeChange}
+            >
+              <SelectTrigger className="w-[70px] h-8">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="5">5</SelectItem>
+                <SelectItem value="10">10</SelectItem>
+                <SelectItem value="25">25</SelectItem>
+                <SelectItem value="50">50</SelectItem>
+                <SelectItem value="100">100</SelectItem>
+              </SelectContent>
+            </Select>
+            <span className="text-sm text-muted-foreground">
+              Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => table.previousPage()}
+              disabled={!table.getCanPreviousPage()}
+            >
+              <ChevronLeft className="size-4" />
+              Previous
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => table.nextPage()}
+              disabled={!table.getCanNextPage()}
+            >
+              Next
+              <ChevronRight className="size-4" />
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

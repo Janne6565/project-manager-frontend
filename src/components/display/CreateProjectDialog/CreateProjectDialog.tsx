@@ -29,8 +29,8 @@ export function CreateProjectDialog({
 
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-  const [projectId, setProjectId] = useState("");
   const [repositories, setRepositories] = useState<string[]>([""]);
+  const [additionalInfo, setAdditionalInfo] = useState<Array<{ id: string; key: string; value: string }>>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleAddRepository = () => {
@@ -47,6 +47,33 @@ export function CreateProjectDialog({
     setRepositories(newRepos);
   };
 
+  const handleAddAdditionalInfo = () => {
+    setAdditionalInfo([
+      ...additionalInfo,
+      { id: `${Date.now()}-${additionalInfo.length}`, key: "", value: "" },
+    ]);
+  };
+
+  const handleRemoveAdditionalInfo = (id: string) => {
+    setAdditionalInfo(additionalInfo.filter((item) => item.id !== id));
+  };
+
+  const handleAdditionalInfoKeyChange = (id: string, newKey: string) => {
+    setAdditionalInfo(
+      additionalInfo.map((item) =>
+        item.id === id ? { ...item, key: newKey } : item
+      )
+    );
+  };
+
+  const handleAdditionalInfoValueChange = (id: string, newValue: string) => {
+    setAdditionalInfo(
+      additionalInfo.map((item) =>
+        item.id === id ? { ...item, value: newValue } : item
+      )
+    );
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -60,11 +87,19 @@ export function CreateProjectDialog({
       // Filter out empty repositories
       const validRepos = repositories.filter((repo) => repo.trim() !== "");
 
+      // Filter out empty additional info entries and convert to object
+      const validAdditionalInfo: Record<string, string> = {};
+      additionalInfo.forEach(({ key, value }) => {
+        if (key.trim() !== "" && value.trim() !== "") {
+          validAdditionalInfo[key.trim()] = value.trim();
+        }
+      });
+
       await dispatch(
         createProject({
           name,
           description,
-          additionalInformation: projectId ? { projectId } : undefined,
+          additionalInformation: Object.keys(validAdditionalInfo).length > 0 ? validAdditionalInfo : undefined,
           repositories: validRepos.length > 0 ? validRepos : undefined,
           index: nextIndex,
         }),
@@ -73,8 +108,8 @@ export function CreateProjectDialog({
       // Reset form
       setName("");
       setDescription("");
-      setProjectId("");
       setRepositories([""]);
+      setAdditionalInfo([]);
       onOpenChange(false);
     } catch (error) {
       console.error("Failed to create project:", error);
@@ -86,8 +121,8 @@ export function CreateProjectDialog({
   const handleCancel = () => {
     setName("");
     setDescription("");
-    setProjectId("");
     setRepositories([""]);
+    setAdditionalInfo([]);
     onOpenChange(false);
   };
 
@@ -133,17 +168,6 @@ export function CreateProjectDialog({
             </Field>
 
             <Field>
-              <FieldLabel htmlFor="projectId">Project ID (Optional)</FieldLabel>
-              <Input
-                id="projectId"
-                value={projectId}
-                onChange={(e) => setProjectId(e.target.value)}
-                disabled={isSubmitting}
-                placeholder="my-project-id"
-              />
-            </Field>
-
-            <Field>
               <div className="flex items-center justify-between">
                 <FieldLabel>Repositories (Optional)</FieldLabel>
                 <Button
@@ -181,6 +205,69 @@ export function CreateProjectDialog({
                     )}
                   </div>
                 ))}
+              </div>
+            </Field>
+
+            <Field>
+              <div className="flex items-center justify-between">
+                <FieldLabel>Additional Information (Optional)</FieldLabel>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleAddAdditionalInfo}
+                  disabled={isSubmitting}
+                >
+                  <Plus className="size-4" />
+                  Add
+                </Button>
+              </div>
+              <div className="flex flex-col gap-2">
+                {additionalInfo.length > 0 ? (
+                  additionalInfo.map((item) => (
+                    <div key={item.id} className="flex gap-2">
+                      <Input
+                        value={item.key}
+                        onChange={(e) =>
+                          handleAdditionalInfoKeyChange(item.id, e.target.value)
+                        }
+                        disabled={isSubmitting}
+                        placeholder="Key"
+                        className="w-1/3"
+                      />
+                      <Input
+                        value={item.value}
+                        onChange={(e) =>
+                          handleAdditionalInfoValueChange(item.id, e.target.value)
+                        }
+                        disabled={isSubmitting}
+                        placeholder="Value"
+                        className="flex-1"
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleRemoveAdditionalInfo(item.id)}
+                        disabled={isSubmitting}
+                      >
+                        <X className="size-4" />
+                      </Button>
+                    </div>
+                  ))
+                ) : (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={handleAddAdditionalInfo}
+                    disabled={isSubmitting}
+                    className="w-fit"
+                  >
+                    <Plus className="size-4" />
+                    Add Attribute
+                  </Button>
+                )}
               </div>
             </Field>
           </FieldGroup>

@@ -1,10 +1,15 @@
-import { useState } from 'react';
-import type { Project } from '@/types/project';
-import { useAppDispatch } from '@/store/hooks';
-import { updateProjectIndex, deleteProject, reorderProjectsOptimistically } from '@/store/slices/projectsSlice';
-import { DataTable } from '@/components/display/DataTable/DataTable';
-import { createProjectColumns } from './columns';
-import { ProjectDetailDrawer } from '@/components/display/ProjectDetailDrawer/ProjectDetailDrawer';
+import { useState } from "react";
+import type { Project } from "@/types/project";
+import { useAppDispatch } from "@/store/hooks";
+import {
+  updateProjectIndex,
+  deleteProject,
+  reorderProjectsOptimistically,
+} from "@/store/slices/projectsSlice";
+import { DataTable } from "@/components/display/DataTable/DataTable";
+import { createProjectColumns } from "./columns";
+import { ProjectDetailDrawer } from "@/components/display/ProjectDetailDrawer/ProjectDetailDrawer";
+import { useNavigate } from "@tanstack/react-router";
 
 interface ProjectsTableProps {
   projects: Project[];
@@ -12,6 +17,7 @@ interface ProjectsTableProps {
 
 export function ProjectsTable({ projects }: ProjectsTableProps) {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [openInEditMode, setOpenInEditMode] = useState(false);
@@ -24,11 +30,11 @@ export function ProjectsTable({ projects }: ProjectsTableProps) {
     try {
       await Promise.all(
         reorderedProjects.map((project, index) =>
-          dispatch(updateProjectIndex({ uuid: project.uuid, index }))
-        )
+          dispatch(updateProjectIndex({ uuid: project.uuid, index })),
+        ),
       );
     } catch (error) {
-      console.error('Failed to update project order:', error);
+      console.error("Failed to update project order:", error);
       // Could add toast notification here
     }
   };
@@ -44,15 +50,13 @@ export function ProjectsTable({ projects }: ProjectsTableProps) {
       try {
         await dispatch(deleteProject(project.uuid));
       } catch (error) {
-        console.error('Failed to delete project:', error);
+        console.error("Failed to delete project:", error);
       }
     }
   };
 
   const handleRowClick = (project: Project) => {
-    setSelectedProject(project);
-    setOpenInEditMode(false);
-    setDrawerOpen(true);
+    navigate({ to: "/project/" + project.uuid });
   };
 
   const handleDrawerOpenChange = (open: boolean) => {
@@ -67,9 +71,9 @@ export function ProjectsTable({ projects }: ProjectsTableProps) {
 
   return (
     <>
-      <DataTable 
-        data={projects} 
-        columns={columns} 
+      <DataTable
+        data={projects}
+        columns={columns}
         onDragEnd={handleDragEnd}
         onRowClick={handleRowClick}
       />

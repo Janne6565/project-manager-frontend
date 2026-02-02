@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { useAppDispatch } from '@/store/hooks';
 import { fetchProjects } from '@/store/slices/projectsSlice';
 import { fetchUnassignedContributions } from '@/store/slices/contributionsSlice';
 import useAuth from '@/hooks/use-auth';
