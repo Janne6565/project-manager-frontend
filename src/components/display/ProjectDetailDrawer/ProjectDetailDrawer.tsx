@@ -1,7 +1,7 @@
-import { useState } from 'react';
-import type { Project } from '@/types/project';
-import { useAppDispatch } from '@/store/hooks';
-import { updateProject } from '@/store/slices/projectsSlice';
+import { useState } from "react";
+import type { Project } from "@/types/project";
+import { useAppDispatch } from "@/store/hooks";
+import { updateProject } from "@/store/slices/projectsSlice";
 import {
   Sheet,
   SheetContent,
@@ -10,13 +10,14 @@ import {
   SheetTitle,
   SheetFooter,
   SheetClose,
-} from '@/components/ui/sheet';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Field, FieldGroup, FieldLabel } from '@/components/ui/field';
-import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
+} from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import TooltipWrapper from "@/components/ui/tooltip-wrapper.tsx";
 
 interface ProjectDetailDrawerProps {
   project: Project;
@@ -42,11 +43,11 @@ export function ProjectDetailDrawer({
         updateProject({
           uuid: project.uuid,
           data: { name, description },
-        })
+        }),
       );
       setIsEditing(false);
     } catch (error) {
-      console.error('Failed to update project:', error);
+      console.error("Failed to update project:", error);
     } finally {
       setIsSaving(false);
     }
@@ -62,15 +63,17 @@ export function ProjectDetailDrawer({
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent className="sm:max-w-lg overflow-y-auto">
         <SheetHeader>
-          <SheetTitle>{isEditing ? 'Edit Project' : 'Project Details'}</SheetTitle>
+          <SheetTitle>
+            {isEditing ? "Edit Project" : "Project Details"}
+          </SheetTitle>
           <SheetDescription>
             {isEditing
-              ? 'Make changes to the project details'
-              : 'View project information and statistics'}
+              ? "Make changes to the project details"
+              : "View project information and statistics"}
           </SheetDescription>
         </SheetHeader>
 
-        <div className="flex flex-col gap-6 py-6">
+        <div className="flex flex-col gap-6 py-6 px-5">
           {!isEditing ? (
             <>
               <div className="flex flex-col gap-2">
@@ -83,7 +86,7 @@ export function ProjectDetailDrawer({
               <div className="flex flex-col gap-2">
                 <h3 className="text-sm font-medium">Description</h3>
                 <p className="text-muted-foreground text-sm">
-                  {project.description || 'No description provided'}
+                  {project.description || "No description provided"}
                 </p>
               </div>
 
@@ -92,17 +95,19 @@ export function ProjectDetailDrawer({
               <div className="flex flex-col gap-2">
                 <h3 className="text-sm font-medium">Repositories</h3>
                 <div className="flex flex-col gap-1">
-                  {project.repositories.length > 0 ? (
-                    project.repositories.map((repo, index) => (
-                      <a
-                        key={index}
-                        href={repo}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-primary hover:underline text-sm truncate"
-                      >
-                        {repo}
-                      </a>
+                  {(project.repositories?.length ?? 0) > 0 ? (
+                    project.repositories?.map((repo, index) => (
+                      <TooltipWrapper tooltip={repo} asChild>
+                        <a
+                          key={index}
+                          href={repo}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-primary hover:underline text-sm truncate"
+                        >
+                          {repo}
+                        </a>
+                      </TooltipWrapper>
                     ))
                   ) : (
                     <p className="text-muted-foreground text-sm">
@@ -117,8 +122,8 @@ export function ProjectDetailDrawer({
               <div className="flex flex-col gap-2">
                 <h3 className="text-sm font-medium">Contributions</h3>
                 <Badge variant="outline" className="w-fit">
-                  {project.contributions.length} contribution
-                  {project.contributions.length !== 1 ? 's' : ''}
+                  {project.contributions?.length} contribution
+                  {(project.contributions?.length ?? 0) !== 1 ? "s" : ""}
                 </Badge>
               </div>
 
@@ -172,7 +177,7 @@ export function ProjectDetailDrawer({
           ) : (
             <>
               <Button onClick={handleSave} disabled={isSaving}>
-                {isSaving ? 'Saving...' : 'Save Changes'}
+                {isSaving ? "Saving..." : "Save Changes"}
               </Button>
               <Button
                 variant="outline"

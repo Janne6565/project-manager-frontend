@@ -1,7 +1,11 @@
+import { useState } from 'react';
 import { createFileRoute } from '@tanstack/react-router';
 import { ProtectedRoute } from '@/components/technical/protected-route';
 import { useAppSelector } from '@/store/hooks';
 import { ProjectsTable } from '@/components/display/ProjectsTable/ProjectsTable';
+import { CreateProjectDialog } from '@/components/display/CreateProjectDialog/CreateProjectDialog';
+import { Button } from '@/components/ui/button';
+import { Plus } from 'lucide-react';
 
 export const Route = createFileRoute('/')({
   component: IndexPage,
@@ -11,6 +15,7 @@ function IndexPage() {
   const { projects, loading, error } = useAppSelector(
     (state) => state.projects
   );
+  const [createDialogOpen, setCreateDialogOpen] = useState(false);
 
   return (
     <ProtectedRoute>
@@ -22,6 +27,10 @@ function IndexPage() {
               Manage and organize your projects
             </p>
           </div>
+          <Button onClick={() => setCreateDialogOpen(true)}>
+            <Plus className="size-4" />
+            New Project
+          </Button>
         </div>
 
         {loading && (
@@ -47,12 +56,21 @@ function IndexPage() {
             <div className="text-muted-foreground text-sm">
               Create your first project to get started
             </div>
+            <Button onClick={() => setCreateDialogOpen(true)}>
+              <Plus className="size-4" />
+              Create Project
+            </Button>
           </div>
         )}
 
         {!loading && !error && projects.length > 0 && (
           <ProjectsTable projects={projects} />
         )}
+
+        <CreateProjectDialog
+          open={createDialogOpen}
+          onOpenChange={setCreateDialogOpen}
+        />
       </div>
     </ProtectedRoute>
   );

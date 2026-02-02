@@ -37,12 +37,11 @@ import {
 } from '@/components/ui/table';
 
 interface DragHandleProps {
-  id: UniqueIdentifier;
+  listeners?: any;
+  attributes?: any;
 }
 
-function DragHandle({ id }: DragHandleProps) {
-  const { attributes, listeners } = useSortable({ id });
-
+function DragHandle({ listeners, attributes }: DragHandleProps) {
   return (
     <Button
       {...attributes}
@@ -64,7 +63,7 @@ interface DraggableRowProps<TData> {
 function DraggableRow<TData extends { uuid: string }>({
   row,
 }: DraggableRowProps<TData>) {
-  const { transform, transition, setNodeRef, isDragging } = useSortable({
+  const { transform, transition, setNodeRef, isDragging, attributes, listeners } = useSortable({
     id: row.original.uuid,
   });
 
@@ -81,7 +80,9 @@ function DraggableRow<TData extends { uuid: string }>({
     >
       {row.getVisibleCells().map((cell) => (
         <TableCell key={cell.id}>
-          {flexRender(cell.column.columnDef.cell, cell.getContext())}
+          {cell.column.id === 'drag' 
+            ? <DragHandle listeners={listeners} attributes={attributes} />
+            : flexRender(cell.column.columnDef.cell, cell.getContext())}
         </TableCell>
       ))}
     </TableRow>

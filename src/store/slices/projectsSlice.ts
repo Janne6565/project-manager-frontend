@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import type { Project } from '@/types/project';
-import { apiFetch, updateProjectIndex as apiUpdateProjectIndex, deleteProject as apiDeleteProject, updateProject as apiUpdateProject } from '@/lib/api';
+import { apiFetch, createProject as apiCreateProject, updateProjectIndex as apiUpdateProjectIndex, deleteProject as apiDeleteProject, updateProject as apiUpdateProject } from '@/lib/api';
 
 interface ProjectsState {
   projects: Project[];
@@ -17,6 +17,21 @@ const initialState: ProjectsState = {
 export const fetchProjects = createAsyncThunk(
   'projects/fetchProjects',
   async () => {
+    return apiFetch<Project[]>('/projects', { requireAuth: false });
+  }
+);
+
+export const createProject = createAsyncThunk(
+  'projects/createProject',
+  async (data: {
+    name: string;
+    description: string;
+    additionalInformation?: { projectId?: string };
+    repositories?: string[];
+    index: number;
+  }) => {
+    await apiCreateProject(data);
+    // Refetch projects to get the new one with UUID
     return apiFetch<Project[]>('/projects', { requireAuth: false });
   }
 );
@@ -70,6 +85,17 @@ const projectsSlice = createSlice({
       .addCase(fetchProjects.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || 'Failed to fetch projects';
+      })
+      .addCase(createProject.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(createProject.fulfilled, (state, action) => {
+        state.loading = false;
+        state.projects = action.payload.sort((a, b) => a.index - b.index);
+      })
+      .addCase(createProject.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || 'Failed to create project';
       })
       .addCase(updateProjectIndex.fulfilled, (state, action) => {
         const project = state.projects.find(p => p.uuid === action.payload.uuid);

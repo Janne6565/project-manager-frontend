@@ -34,6 +34,19 @@ export async function apiFetch<T>(
   return response.json();
 }
 
+export async function createProject(data: {
+  name: string;
+  description: string;
+  additionalInformation?: { projectId?: string };
+  repositories?: string[];
+  index: number;
+}): Promise<void> {
+  await apiFetch('/projects', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  });
+}
+
 export async function updateProjectIndex(
   uuid: string,
   index: number

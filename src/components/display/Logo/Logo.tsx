@@ -20,7 +20,7 @@ const Logo = () => {
             color={`var(--color-${color})`}
             className={"transition-colors"}
           />
-          <p>janne6565</p>
+          <p className={"font-bold"}>janne6565</p>
         </Button>
       </TooltipWrapper>
       <p className={"text-gray-100"}></p>
