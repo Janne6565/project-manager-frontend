@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import type { Project } from "@/types/project";
 import { useAppDispatch } from "@/store/hooks";
 import { updateProject } from "@/store/slices/projectsSlice";
@@ -23,12 +23,14 @@ interface ProjectDetailDrawerProps {
   project: Project;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  initialEditMode?: boolean;
 }
 
 export function ProjectDetailDrawer({
   project,
   open,
   onOpenChange,
+  initialEditMode = false,
 }: ProjectDetailDrawerProps) {
   const dispatch = useAppDispatch();
   const [name, setName] = useState(project.name);
@@ -39,19 +41,25 @@ export function ProjectDetailDrawer({
   const [projectId, setProjectId] = useState(
     project.additionalInformation?.projectId || "",
   );
-  const [isEditing, setIsEditing] = useState(false);
+  const [isEditing, setIsEditing] = useState(initialEditMode);
   const [isSaving, setIsSaving] = useState(false);
+  
+  // Track the previous open state to detect when drawer is opening
+  const prevOpenRef = useRef(open);
 
   // Reset form state when project changes or drawer opens
   useEffect(() => {
-    if (open) {
+    const isOpening = open && !prevOpenRef.current;
+    prevOpenRef.current = open;
+    
+    if (isOpening) {
       setName(project.name);
       setDescription(project.description);
       setRepositories(project.repositories || []);
       setProjectId(project.additionalInformation?.projectId || "");
-      setIsEditing(false);
+      setIsEditing(initialEditMode);
     }
-  }, [project, open]);
+  }, [project, open, initialEditMode]);
 
   const handleAddRepository = () => {
     setRepositories([...repositories, ""]);

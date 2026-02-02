@@ -14,6 +14,7 @@ export function ProjectsTable({ projects }: ProjectsTableProps) {
   const dispatch = useAppDispatch();
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [openInEditMode, setOpenInEditMode] = useState(false);
 
   const handleDragEnd = async (reorderedProjects: Project[]) => {
     // Optimistically update the UI
@@ -34,6 +35,7 @@ export function ProjectsTable({ projects }: ProjectsTableProps) {
 
   const handleEdit = (project: Project) => {
     setSelectedProject(project);
+    setOpenInEditMode(true);
     setDrawerOpen(true);
   };
 
@@ -49,7 +51,12 @@ export function ProjectsTable({ projects }: ProjectsTableProps) {
 
   const handleRowClick = (project: Project) => {
     setSelectedProject(project);
+    setOpenInEditMode(false);
     setDrawerOpen(true);
+  };
+
+  const handleDrawerOpenChange = (open: boolean) => {
+    setDrawerOpen(open);
   };
 
   const columns = createProjectColumns({
@@ -70,7 +77,8 @@ export function ProjectsTable({ projects }: ProjectsTableProps) {
         <ProjectDetailDrawer
           project={selectedProject}
           open={drawerOpen}
-          onOpenChange={setDrawerOpen}
+          onOpenChange={handleDrawerOpenChange}
+          initialEditMode={openInEditMode}
         />
       )}
     </>
