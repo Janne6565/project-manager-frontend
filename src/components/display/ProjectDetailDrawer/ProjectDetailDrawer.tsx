@@ -135,6 +135,7 @@ export function ProjectDetailDrawer({
             description,
             repositories: validRepos.length > 0 ? validRepos : [],
             additionalInformation: Object.keys(validAdditionalInfo).length > 0 ? validAdditionalInfo : {},
+            index: project.index,
           },
         }),
       );

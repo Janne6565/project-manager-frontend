@@ -9,10 +9,16 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as RepositoriesRouteImport } from './routes/repositories'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProjectProjectUuidRouteImport } from './routes/project/$projectUuid'
 
+const RepositoriesRoute = RepositoriesRouteImport.update({
+  id: '/repositories',
+  path: '/repositories',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
@@ -32,35 +38,46 @@ const ProjectProjectUuidRoute = ProjectProjectUuidRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
+  '/repositories': typeof RepositoriesRoute
   '/project/$projectUuid': typeof ProjectProjectUuidRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
+  '/repositories': typeof RepositoriesRoute
   '/project/$projectUuid': typeof ProjectProjectUuidRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
+  '/repositories': typeof RepositoriesRoute
   '/project/$projectUuid': typeof ProjectProjectUuidRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login' | '/project/$projectUuid'
+  fullPaths: '/' | '/login' | '/repositories' | '/project/$projectUuid'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/project/$projectUuid'
-  id: '__root__' | '/' | '/login' | '/project/$projectUuid'
+  to: '/' | '/login' | '/repositories' | '/project/$projectUuid'
+  id: '__root__' | '/' | '/login' | '/repositories' | '/project/$projectUuid'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   LoginRoute: typeof LoginRoute
+  RepositoriesRoute: typeof RepositoriesRoute
   ProjectProjectUuidRoute: typeof ProjectProjectUuidRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/repositories': {
+      id: '/repositories'
+      path: '/repositories'
+      fullPath: '/repositories'
+      preLoaderRoute: typeof RepositoriesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/login': {
       id: '/login'
       path: '/login'
@@ -88,6 +105,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   LoginRoute: LoginRoute,
+  RepositoriesRoute: RepositoriesRoute,
   ProjectProjectUuidRoute: ProjectProjectUuidRoute,
 }
 export const routeTree = rootRouteImport

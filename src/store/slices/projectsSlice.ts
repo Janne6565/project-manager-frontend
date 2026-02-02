@@ -61,6 +61,7 @@ export const updateProject = createAsyncThunk(
       description?: string;
       repositories?: string[];
       additionalInformation?: { projectId?: string; [key: string]: unknown };
+      index?: number;
     } 
   }) => {
     await apiUpdateProject(uuid, data);

@@ -70,6 +70,7 @@ export async function updateProject(
     description?: string;
     repositories?: string[];
     additionalInformation?: { projectId?: string; [key: string]: unknown };
+    index?: number;
   },
 ): Promise<void> {
   await apiFetch(`/projects/${uuid}`, {

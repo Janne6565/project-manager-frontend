@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { createProject } from "@/store/slices/projectsSlice";
+import { createProject, fetchProjects } from "@/store/slices/projectsSlice";
+import { fetchUnassignedContributions } from "@/store/slices/contributionsSlice";
 import {
   Sheet,
   SheetContent,
@@ -18,20 +19,29 @@ import { Plus, X } from "lucide-react";
 interface CreateProjectDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  initialRepository?: string;
 }
 
 export function CreateProjectDialog({
   open,
   onOpenChange,
+  initialRepository,
 }: CreateProjectDialogProps) {
   const dispatch = useAppDispatch();
   const projects = useAppSelector((state) => state.projects.projects);
 
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-  const [repositories, setRepositories] = useState<string[]>([""]);
+  const [repositories, setRepositories] = useState<string[]>([initialRepository || ""]);
   const [additionalInfo, setAdditionalInfo] = useState<Array<{ id: string; key: string; value: string }>>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Reset form when dialog opens with initial repository
+  useEffect(() => {
+    if (open) {
+      setRepositories([initialRepository || ""]);
+    }
+  }, [open, initialRepository]);
 
   const handleAddRepository = () => {
     setRepositories([...repositories, ""]);
@@ -105,10 +115,16 @@ export function CreateProjectDialog({
         }),
       ).unwrap();
 
-      // Reset form
+      // Reload all data to reflect the new project and updated contributions
+      await Promise.all([
+        dispatch(fetchProjects()),
+        dispatch(fetchUnassignedContributions()),
+      ]);
+
+      // Reset form and close dialog after successful creation and data reload
       setName("");
       setDescription("");
-      setRepositories([""]);
+      setRepositories([initialRepository || ""]);
       setAdditionalInfo([]);
       onOpenChange(false);
     } catch (error) {

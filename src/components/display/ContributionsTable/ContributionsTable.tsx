@@ -27,10 +27,10 @@ interface ContributionsTableProps {
 export function ContributionsTable({ contributions }: ContributionsTableProps) {
   const [currentPage, setCurrentPage] = useState(0);
   const [pageSize, setPageSize] = useState<number>(() => {
-    const stored = localStorage.getItem('contributionsTable.pageSize');
+    const stored = localStorage.getItem("contributionsTable.pageSize");
     return stored ? Number(stored) : 10;
   });
-  
+
   const sortedContributions = useMemo(
     () => sorted(contributions, (a, b) => b.day.localeCompare(a.day)),
     [contributions],
@@ -45,7 +45,7 @@ export function ContributionsTable({ contributions }: ContributionsTableProps) {
   const handlePageSizeChange = (newSize: string) => {
     const size = Number(newSize);
     setPageSize(size);
-    localStorage.setItem('contributionsTable.pageSize', newSize);
+    localStorage.setItem("contributionsTable.pageSize", newSize);
     setCurrentPage(0);
   };
 
@@ -107,7 +107,9 @@ export function ContributionsTable({ contributions }: ContributionsTableProps) {
       {sortedContributions.length > 0 && (
         <div className="flex items-center justify-between px-2">
           <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground">Rows per page:</span>
+            <span className="text-sm text-muted-foreground">
+              Rows per page:
+            </span>
             <Select
               value={pageSize.toString()}
               onValueChange={handlePageSizeChange}
@@ -124,7 +126,8 @@ export function ContributionsTable({ contributions }: ContributionsTableProps) {
               </SelectContent>
             </Select>
             <span className="text-sm text-muted-foreground">
-              Page {currentPage + 1} of {totalPages} ({sortedContributions.length} total)
+              Page {currentPage + 1} of {totalPages} (
+              {sortedContributions.length} total)
             </span>
           </div>
           <div className="flex items-center gap-2">
