@@ -71,10 +71,17 @@ export async function updateProject(
     repositories?: string[];
     additionalInformation?: { projectId?: string; [key: string]: unknown };
     index?: number;
+    isVisible?: boolean;
   },
 ): Promise<void> {
   await apiFetch(`/projects/${uuid}`, {
     method: "PUT",
     body: JSON.stringify(data),
+  });
+}
+
+export async function toggleProjectVisibility(uuid: string): Promise<void> {
+  await apiFetch(`/projects/${uuid}/visibility`, {
+    method: "PATCH",
   });
 }

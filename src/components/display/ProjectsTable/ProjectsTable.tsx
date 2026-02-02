@@ -5,6 +5,7 @@ import {
   updateProjectIndex,
   deleteProject,
   reorderProjectsOptimistically,
+  toggleProjectVisibility,
 } from "@/store/slices/projectsSlice";
 import { DataTable } from "@/components/display/DataTable/DataTable";
 import { createProjectColumns } from "./columns";
@@ -59,6 +60,14 @@ export function ProjectsTable({ projects }: ProjectsTableProps) {
     navigate({ to: "/project/" + project.uuid });
   };
 
+  const handleToggleVisibility = async (project: Project) => {
+    try {
+      await dispatch(toggleProjectVisibility(project.uuid)).unwrap();
+    } catch (error) {
+      console.error("Failed to toggle project visibility:", error);
+    }
+  };
+
   const handleDrawerOpenChange = (open: boolean) => {
     setDrawerOpen(open);
   };
@@ -67,6 +76,7 @@ export function ProjectsTable({ projects }: ProjectsTableProps) {
     onEdit: handleEdit,
     onDelete: handleDelete,
     onRowClick: handleRowClick,
+    onToggleVisibility: handleToggleVisibility,
   });
 
   return (

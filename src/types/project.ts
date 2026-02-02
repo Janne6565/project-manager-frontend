@@ -5,6 +5,7 @@ export interface Project {
   name: string;
   description: string;
   index: number;
+  isVisible?: boolean;
   additionalInformation?: {
     [key: string]: string;
   };

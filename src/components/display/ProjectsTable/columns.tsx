@@ -1,6 +1,6 @@
 import type { ColumnDef } from "@tanstack/react-table";
 import type { Project } from "@/types/project";
-import { MoreHorizontal } from "lucide-react";
+import { MoreHorizontal, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -10,17 +10,21 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
+import TooltipWrapper from "@/components/ui/tooltip-wrapper";
 
 interface ColumnOptions {
   onEdit?: (project: Project) => void;
   onDelete?: (project: Project) => void;
   onRowClick?: (project: Project) => void;
+  onToggleVisibility?: (project: Project) => void;
 }
 
 export function createProjectColumns({
   onEdit,
   onDelete,
   onRowClick,
+  onToggleVisibility,
 }: ColumnOptions = {}): ColumnDef<Project>[] {
   return [
     {
@@ -28,6 +32,36 @@ export function createProjectColumns({
       header: () => null,
       cell: () => null, // Will be replaced in DraggableRow
       size: 40,
+    },
+    {
+      id: "visibility",
+      header: () => (
+        <div className="flex items-center justify-center">
+          <TooltipWrapper tooltip="Visibility">
+            <Eye className="size-4 text-muted-foreground" />
+          </TooltipWrapper>
+        </div>
+      ),
+      cell: ({ row }) => {
+        const project = row.original;
+        const isVisible = project.isVisible !== false;
+        
+        return (
+          <div className="flex items-center justify-center">
+            <TooltipWrapper
+              tooltip={isVisible ? "Visible to public" : "Hidden from public"}
+            >
+              <Switch
+                checked={isVisible}
+                onCheckedChange={() => onToggleVisibility?.(project)}
+                onClick={(e: React.MouseEvent) => e.stopPropagation()}
+                className="data-[state=checked]:bg-green-600"
+              />
+            </TooltipWrapper>
+          </div>
+        );
+      },
+      size: 80,
     },
     {
       accessorKey: "name",

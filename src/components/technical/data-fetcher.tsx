@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useAppDispatch } from '@/store/hooks';
-import { fetchProjects } from '@/store/slices/projectsSlice';
+import { fetchAllProjects } from '@/store/slices/projectsSlice';
 import { fetchUnassignedContributions } from '@/store/slices/contributionsSlice';
 import useAuth from '@/hooks/use-auth';
 
@@ -13,8 +13,8 @@ export function DataFetcher() {
 
   useEffect(() => {
     if (user) {
-      // Fetch both projects and contributions when user is logged in
-      dispatch(fetchProjects());
+      // Fetch all projects (admin) and contributions when user is logged in
+      dispatch(fetchAllProjects());
       dispatch(fetchUnassignedContributions());
     }
   }, [user, dispatch]);

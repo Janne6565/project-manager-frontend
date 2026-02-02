@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import type { Project } from '@/types/project';
-import { apiFetch, createProject as apiCreateProject, updateProjectIndex as apiUpdateProjectIndex, deleteProject as apiDeleteProject, updateProject as apiUpdateProject } from '@/lib/api';
+import { apiFetch, createProject as apiCreateProject, updateProjectIndex as apiUpdateProjectIndex, deleteProject as apiDeleteProject, updateProject as apiUpdateProject, toggleProjectVisibility as apiToggleProjectVisibility } from '@/lib/api';
 
 interface ProjectsState {
   projects: Project[];
@@ -18,6 +18,13 @@ export const fetchProjects = createAsyncThunk(
   'projects/fetchProjects',
   async () => {
     return apiFetch<Project[]>('/projects', { requireAuth: false });
+  }
+);
+
+export const fetchAllProjects = createAsyncThunk(
+  'projects/fetchAllProjects',
+  async () => {
+    return apiFetch<Project[]>('/admin/projects');
   }
 );
 
@@ -62,10 +69,19 @@ export const updateProject = createAsyncThunk(
       repositories?: string[];
       additionalInformation?: { projectId?: string; [key: string]: unknown };
       index?: number;
+      isVisible?: boolean;
     } 
   }) => {
     await apiUpdateProject(uuid, data);
     return { uuid, data };
+  }
+);
+
+export const toggleProjectVisibility = createAsyncThunk(
+  'projects/toggleVisibility',
+  async (uuid: string) => {
+    await apiToggleProjectVisibility(uuid);
+    return uuid;
   }
 );
 
@@ -119,6 +135,24 @@ const projectsSlice = createSlice({
         const project = state.projects.find(p => p.uuid === action.payload.uuid);
         if (project) {
           Object.assign(project, action.payload.data);
+        }
+      })
+      .addCase(fetchAllProjects.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchAllProjects.fulfilled, (state, action) => {
+        state.loading = false;
+        state.projects = action.payload.sort((a, b) => a.index - b.index);
+      })
+      .addCase(fetchAllProjects.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || 'Failed to fetch all projects';
+      })
+      .addCase(toggleProjectVisibility.fulfilled, (state, action) => {
+        const project = state.projects.find(p => p.uuid === action.payload);
+        if (project) {
+          project.isVisible = !project.isVisible;
         }
       });
   },
