@@ -23,10 +23,12 @@ FROM base AS builder
 COPY --from=install /temp/dev/node_modules node_modules
 COPY . .
 
+# Build-time arguments (can be overridden during docker build)
+ARG VITE_API_BASE_URL=/api/v1
+
+# Convert ARG to ENV so Vite can see them during build
+ENV VITE_API_BASE_URL=${VITE_API_BASE_URL}
 ENV NODE_ENV=production
-ENV VITE_API_BASE_URL=/api/v1
-ENV VITE_BACKEND_BROKER_URL=/api/v1/ws
-ENV VITE_BACKEND_WEBSOCKET_FACTORY=/api/v1/ws
 
 # Build the application
 RUN bun run build

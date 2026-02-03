@@ -1,12 +1,11 @@
-import { createContext, type ReactNode, useState, useEffect } from 'react';
+import { createContext, type ReactNode, useState, useEffect } from "react";
 import type {
   User,
   LoginRequest,
   LoginResponse,
   AuthStatus,
-} from '@/types/auth.ts';
-
-const API_BASE_URL = 'http://localhost:8080/api/v1';
+} from "@/types/auth.ts";
+import { API_BASE_URL } from "@/lib/api.ts";
 
 interface AuthContextValue {
   user: User | null;
@@ -27,7 +26,7 @@ const AuthProvider = (props: { children: ReactNode }) => {
   const checkAuthStatus = async () => {
     try {
       const response = await fetch(`${API_BASE_URL}/auth/status`, {
-        credentials: 'include',
+        credentials: "include",
       });
 
       if (response.ok) {
@@ -41,7 +40,7 @@ const AuthProvider = (props: { children: ReactNode }) => {
         setUser(null);
       }
     } catch (err) {
-      console.error('Auth status check failed:', err);
+      console.error("Auth status check failed:", err);
       setUser(null);
     } finally {
       setIsLoading(false);
@@ -52,23 +51,23 @@ const AuthProvider = (props: { children: ReactNode }) => {
     setError(null);
     try {
       const response = await fetch(`${API_BASE_URL}/auth/login`, {
-        method: 'POST',
-        credentials: 'include',
+        method: "POST",
+        credentials: "include",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(credentials),
       });
 
       if (!response.ok) {
-        throw new Error('Login failed. Please check your credentials.');
+        throw new Error("Login failed. Please check your credentials.");
       }
 
       const data: LoginResponse = await response.json();
       setUser({ username: data.username });
     } catch (err) {
       const errorMessage =
-        err instanceof Error ? err.message : 'Login failed. Please try again.';
+        err instanceof Error ? err.message : "Login failed. Please try again.";
       setError(errorMessage);
       throw err;
     }
@@ -77,11 +76,11 @@ const AuthProvider = (props: { children: ReactNode }) => {
   const logout = async () => {
     try {
       await fetch(`${API_BASE_URL}/auth/logout`, {
-        method: 'POST',
-        credentials: 'include',
+        method: "POST",
+        credentials: "include",
       });
     } catch (err) {
-      console.error('Logout failed:', err);
+      console.error("Logout failed:", err);
     } finally {
       setUser(null);
     }
