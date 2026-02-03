@@ -84,7 +84,7 @@ const AppNavBar = () => {
           </SidebarMenuItem>
         </SidebarMenu>
         {user && (
-          <SidebarMenuItem>
+          <SidebarMenuItem className={"list-none"}>
             <div className="flex items-stretch gap-2 px-2 py-1 h-full">
               <Button
                 className="text-sm px-2 grow rounded-md min-h-0"
