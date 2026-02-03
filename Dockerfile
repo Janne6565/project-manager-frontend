@@ -24,6 +24,7 @@ COPY --from=install /temp/dev/node_modules node_modules
 COPY . .
 
 ENV NODE_ENV=production
+ENV VITE_API_BASE_URL=/api/v1
 ENV VITE_BACKEND_BROKER_URL=/api/v1/ws
 ENV VITE_BACKEND_WEBSOCKET_FACTORY=/api/v1/ws
 
