@@ -271,7 +271,7 @@ export function DataTable<TData extends { uuid: string }>({
               {t("contributions.table.pagination.page", {
                 current: table.getState().pagination.pageIndex + 1,
                 total: table.getPageCount(),
-                count: table.getRowCount()
+                totalCount: table.getRowCount()
               })}
             </span>
           </div>

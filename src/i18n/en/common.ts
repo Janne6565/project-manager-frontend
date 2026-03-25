@@ -142,7 +142,7 @@ export default {
       },
       pagination: {
         rowsPerPage: "Rows per page:",
-        page: "Page {{current}} of {{total}} ({{count}} total)",
+        page: "Page {{current}} of {{total}} ({{totalCount}} total)",
         previous: "Previous",
         next: "Next",
       },

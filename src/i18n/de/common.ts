@@ -148,7 +148,7 @@ export default {
       },
       pagination: {
         rowsPerPage: "Zeilen pro Seite:",
-        page: "Seite {{current}} von {{total}} ({{count}} insgesamt)",
+        page: "Seite {{current}} von {{total}} ({{totalCount}} insgesamt)",
         previous: "Zurück",
         next: "Weiter",
       },

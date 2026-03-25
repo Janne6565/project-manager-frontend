@@ -149,7 +149,7 @@ export function ContributionsTable({ contributions }: ContributionsTableProps) {
               {t("contributions.table.pagination.page", {
                 current: currentPage + 1,
                 total: totalPages,
-                count: contributions.length
+                totalCount: contributions.length
               })}
             </span>
           </div>
