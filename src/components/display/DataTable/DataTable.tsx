@@ -268,7 +268,7 @@ export function DataTable<TData extends { uuid: string }>({
               </SelectContent>
             </Select>
             <span className="text-sm text-muted-foreground">
-              {t("contributions.table.pagination.page", {
+              {t("contributions.table.pagination.page", "", {
                 current: table.getState().pagination.pageIndex + 1,
                 total: table.getPageCount(),
                 totalCount: table.getRowCount()

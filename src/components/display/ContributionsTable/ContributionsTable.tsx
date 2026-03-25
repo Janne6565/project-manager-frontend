@@ -146,7 +146,7 @@ export function ContributionsTable({ contributions }: ContributionsTableProps) {
               </SelectContent>
             </Select>
             <span className="text-sm text-muted-foreground">
-              {t("contributions.table.pagination.page", {
+              {t("contributions.table.pagination.page", "",  {
                 current: currentPage + 1,
                 total: totalPages,
                 totalCount: contributions.length
