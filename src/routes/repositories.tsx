@@ -1,11 +1,11 @@
+import { useState, useMemo } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { ProtectedRoute } from "@/components/technical/protected-route";
 import { useAppSelector } from "@/store/hooks";
-import { useMemo } from "react";
-import { aggregateContributionsByRepository } from "@/lib/repository-utils";
 import { RepositoriesTable } from "@/components/display/RepositoriesTable/RepositoriesTable";
-import { Loader2, AlertCircle } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Loader2, AlertCircle, Search } from "lucide-react";
 
 export const Route = createFileRoute("/repositories")({
   component: RepositoriesPage,
@@ -24,11 +24,17 @@ function RepositoriesContent() {
   const { contributions, loading, error } = useAppSelector(
     (state) => state.contributions
   );
+  const [search, setSearch] = useState("");
 
-  const aggregatedRepositories = useMemo(
-    () => aggregateContributionsByRepository(contributions),
-    [contributions]
-  );
+  const filteredContributions = useMemo(() => {
+    if (!search.trim()) return contributions;
+    const q = search.toLowerCase();
+    return contributions.filter(
+      (r) =>
+        r.name.toLowerCase().includes(q) ||
+        r.url.toLowerCase().includes(q)
+    );
+  }, [contributions, search]);
 
   if (loading) {
     return (
@@ -62,11 +68,11 @@ function RepositoriesContent() {
       <div>
         <h1 className="text-3xl font-bold">{t("repositories.title")}</h1>
         <p className="text-muted-foreground mt-1">
-          {t("repositories.description", { count: aggregatedRepositories.length })}
+          {t("repositories.description", { count: contributions.length })}
         </p>
       </div>
 
-      {aggregatedRepositories.length === 0 ? (
+      {contributions.length === 0 ? (
         <div className="flex flex-col items-center justify-center rounded-lg border border-dashed py-12">
           <div className="text-muted-foreground font-medium">
             {t("repositories.empty.title")}
@@ -76,7 +82,18 @@ function RepositoriesContent() {
           </div>
         </div>
       ) : (
-        <RepositoriesTable repositories={aggregatedRepositories} />
+        <>
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              placeholder={t("common.search")}
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="pl-9"
+            />
+          </div>
+          <RepositoriesTable repositories={filteredContributions} />
+        </>
       )}
     </div>
   );

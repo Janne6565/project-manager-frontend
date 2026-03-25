@@ -1,9 +1,9 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import type { Contribution } from '@/types/contribution';
+import type { RepositoryContribution } from '@/types/contribution';
 import { apiFetch } from '@/lib/api';
 
 interface ContributionsState {
-  contributions: Contribution[];
+  contributions: RepositoryContribution[];
   loading: boolean;
   error: string | null;
 }
@@ -17,7 +17,7 @@ const initialState: ContributionsState = {
 export const fetchUnassignedContributions = createAsyncThunk(
   'contributions/fetchUnassigned',
   async () => {
-    return apiFetch<Contribution[]>('/contributions/unassigned', {
+    return apiFetch<RepositoryContribution[]>('/contributions/unassigned', {
       requireAuth: false,
     });
   }

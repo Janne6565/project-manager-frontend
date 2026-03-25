@@ -1,6 +1,8 @@
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import type { Contribution } from "@/types/contribution";
+import type { RepositoryContribution } from "@/types/contribution";
+import { totalContributions } from "@/types/contribution";
+import { extractRepoName } from "@/lib/repository-utils";
 import {
   Table,
   TableBody,
@@ -19,31 +21,24 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ExternalLink, ChevronLeft, ChevronRight } from "lucide-react";
-import { sorted } from "@/lib/utils.ts";
 
 interface ContributionsTableProps {
-  contributions: Contribution[];
+  contributions: RepositoryContribution[];
 }
 
 export function ContributionsTable({ contributions }: ContributionsTableProps) {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const [currentPage, setCurrentPage] = useState(0);
   const [pageSize, setPageSize] = useState<number>(() => {
     const stored = localStorage.getItem("contributionsTable.pageSize");
     return stored ? Number(stored) : 10;
   });
 
-  const sortedContributions = useMemo(
-    () => sorted(contributions, (a, b) => b.day.localeCompare(a.day)),
-    [contributions],
-  );
-
-  const totalPages = Math.ceil(sortedContributions.length / pageSize);
+  const totalPages = Math.ceil(contributions.length / pageSize);
   const startIndex = currentPage * pageSize;
   const endIndex = startIndex + pageSize;
-  const currentContributions = sortedContributions.slice(startIndex, endIndex);
+  const currentContributions = contributions.slice(startIndex, endIndex);
 
-  // Reset to first page when page size changes
   const handlePageSizeChange = (newSize: string) => {
     const size = Number(newSize);
     setPageSize(size);
@@ -70,34 +65,58 @@ export function ContributionsTable({ contributions }: ContributionsTableProps) {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>{t("contributions.table.columns.date")}</TableHead>
-              <TableHead>{t("contributions.table.columns.type")}</TableHead>
               <TableHead>{t("contributions.table.columns.repository")}</TableHead>
-              <TableHead>{t("contributions.table.columns.reference")}</TableHead>
+              <TableHead className="text-center">{t("contributions.table.columns.total")}</TableHead>
+              <TableHead className="text-center">{t("contributions.table.types.commit")}</TableHead>
+              <TableHead className="text-center">{t("contributions.table.types.pullRequest")}</TableHead>
+              <TableHead className="text-center">{t("contributions.table.types.issue")}</TableHead>
+              <TableHead className="text-center">{t("contributions.table.types.review")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {currentContributions.map((contribution, index) => (
-              <TableRow key={`${currentPage}-${index}`}>
-                <TableCell className="font-medium">
-                  {formatDate(contribution.day, i18n.language)}
-                </TableCell>
-                <TableCell>
-                  <ContributionTypeBadge type={contribution.type} />
-                </TableCell>
-                <TableCell className="text-muted-foreground">
-                  {extractRepoName(contribution.repositoryUrl)}
-                </TableCell>
+            {currentContributions.map((repo) => (
+              <TableRow key={repo.url}>
                 <TableCell>
                   <a
-                    href={contribution.reference}
+                    href={repo.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 text-primary hover:underline"
+                    className="inline-flex items-center gap-2 font-medium text-primary hover:underline"
                   >
-                    {t("contributions.table.viewLink")}
+                    {repo.name || extractRepoName(repo.url)}
                     <ExternalLink className="size-3" />
                   </a>
+                </TableCell>
+                <TableCell className="text-center">
+                  <Badge variant="secondary">{totalContributions(repo)}</Badge>
+                </TableCell>
+                <TableCell className="text-center">
+                  {repo.commits > 0 ? (
+                    <Badge variant="secondary">{repo.commits}</Badge>
+                  ) : (
+                    <span className="text-muted-foreground">-</span>
+                  )}
+                </TableCell>
+                <TableCell className="text-center">
+                  {repo.pullRequests > 0 ? (
+                    <Badge variant="default">{repo.pullRequests}</Badge>
+                  ) : (
+                    <span className="text-muted-foreground">-</span>
+                  )}
+                </TableCell>
+                <TableCell className="text-center">
+                  {repo.issues > 0 ? (
+                    <Badge variant="outline">{repo.issues}</Badge>
+                  ) : (
+                    <span className="text-muted-foreground">-</span>
+                  )}
+                </TableCell>
+                <TableCell className="text-center">
+                  {repo.reviews > 0 ? (
+                    <Badge variant="outline">{repo.reviews}</Badge>
+                  ) : (
+                    <span className="text-muted-foreground">-</span>
+                  )}
                 </TableCell>
               </TableRow>
             ))}
@@ -105,8 +124,7 @@ export function ContributionsTable({ contributions }: ContributionsTableProps) {
         </Table>
       </div>
 
-      {/* Pagination Controls */}
-      {sortedContributions.length > 0 && (
+      {contributions.length > 0 && (
         <div className="flex items-center justify-between px-2">
           <div className="flex items-center gap-2">
             <span className="text-sm text-muted-foreground">
@@ -131,7 +149,7 @@ export function ContributionsTable({ contributions }: ContributionsTableProps) {
               {t("contributions.table.pagination.page", {
                 current: currentPage + 1,
                 total: totalPages,
-                count: sortedContributions.length
+                count: contributions.length
               })}
             </span>
           </div>
@@ -159,36 +177,4 @@ export function ContributionsTable({ contributions }: ContributionsTableProps) {
       )}
     </div>
   );
-}
-
-function ContributionTypeBadge({ type }: { type: Contribution["type"] }) {
-  const { t } = useTranslation();
-  
-  const config = {
-    PULL_REQUEST: { label: t("contributions.table.types.pullRequest"), variant: "default" as const },
-    COMMIT: { label: t("contributions.table.types.commit"), variant: "secondary" as const },
-    ISSUE: { label: t("contributions.table.types.issue"), variant: "outline" as const },
-  };
-
-  const { label, variant } = config[type];
-
-  return <Badge variant={variant}>{label}</Badge>;
-}
-
-function formatDate(dateString: string, locale: string): string {
-  const date = new Date(dateString);
-  return date.toLocaleDateString(locale, {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
-}
-
-function extractRepoName(url: string): string {
-  try {
-    const parts = url.replace("https://github.com/", "").split("/");
-    return parts.slice(0, 2).join("/");
-  } catch {
-    return url;
-  }
 }

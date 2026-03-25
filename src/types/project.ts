@@ -1,4 +1,4 @@
-import type { Contribution } from "./contribution";
+import type { RepositoryContribution } from "./contribution";
 
 export interface Project {
   uuid: string;
@@ -12,5 +12,5 @@ export interface Project {
     [key: string]: string;
   };
   repositories?: string[];
-  contributions?: Contribution[];
+  contributions?: RepositoryContribution[];
 }

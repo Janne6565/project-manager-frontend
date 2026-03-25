@@ -1,6 +1,7 @@
 import { useState } from "react";
-import type { RepositoryAggregate } from "@/lib/repository-utils";
-import { formatDateRange } from "@/lib/repository-utils";
+import type { RepositoryContribution } from "@/types/contribution";
+import { totalContributions } from "@/types/contribution";
+import { extractRepoName } from "@/lib/repository-utils";
 import {
   Table,
   TableBody,
@@ -29,7 +30,7 @@ import { AssignToProjectDialog } from "./AssignToProjectDialog";
 import { CreateProjectDialog } from "@/components/display/CreateProjectDialog/CreateProjectDialog";
 
 interface RepositoriesTableProps {
-  repositories: RepositoryAggregate[];
+  repositories: RepositoryContribution[];
 }
 
 export function RepositoriesTable({ repositories }: RepositoriesTableProps) {
@@ -72,40 +73,40 @@ export function RepositoriesTable({ repositories }: RepositoriesTableProps) {
             <TableRow>
               <TableHead>Repository</TableHead>
               <TableHead className="text-center">Total</TableHead>
-              <TableHead className="text-center">Pull Requests</TableHead>
               <TableHead className="text-center">Commits</TableHead>
+              <TableHead className="text-center">Pull Requests</TableHead>
               <TableHead className="text-center">Issues</TableHead>
-              <TableHead>Date Range</TableHead>
+              <TableHead className="text-center">Reviews</TableHead>
               <TableHead className="w-[50px]"></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {currentRepositories.map((repo) => (
-              <TableRow key={repo.repositoryUrl}>
+              <TableRow key={repo.url}>
                 <TableCell>
                   <a
-                    href={repo.repositoryUrl}
+                    href={repo.url}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-2 font-medium text-primary hover:underline"
                   >
-                    {repo.repositoryName}
+                    {repo.name || extractRepoName(repo.url)}
                     <ExternalLink className="size-3" />
                   </a>
                 </TableCell>
                 <TableCell className="text-center">
-                  <Badge variant="secondary">{repo.totalContributions}</Badge>
+                  <Badge variant="secondary">{totalContributions(repo)}</Badge>
                 </TableCell>
                 <TableCell className="text-center">
-                  {repo.pullRequests > 0 ? (
-                    <Badge variant="default">{repo.pullRequests}</Badge>
+                  {repo.commits > 0 ? (
+                    <Badge variant="secondary">{repo.commits}</Badge>
                   ) : (
                     <span className="text-muted-foreground">-</span>
                   )}
                 </TableCell>
                 <TableCell className="text-center">
-                  {repo.commits > 0 ? (
-                    <Badge variant="secondary">{repo.commits}</Badge>
+                  {repo.pullRequests > 0 ? (
+                    <Badge variant="default">{repo.pullRequests}</Badge>
                   ) : (
                     <span className="text-muted-foreground">-</span>
                   )}
@@ -117,8 +118,12 @@ export function RepositoriesTable({ repositories }: RepositoriesTableProps) {
                     <span className="text-muted-foreground">-</span>
                   )}
                 </TableCell>
-                <TableCell className="text-muted-foreground text-sm">
-                  {formatDateRange(repo.dateRange.earliest, repo.dateRange.latest)}
+                <TableCell className="text-center">
+                  {repo.reviews > 0 ? (
+                    <Badge variant="outline">{repo.reviews}</Badge>
+                  ) : (
+                    <span className="text-muted-foreground">-</span>
+                  )}
                 </TableCell>
                 <TableCell>
                   <DropdownMenu>
@@ -128,11 +133,11 @@ export function RepositoriesTable({ repositories }: RepositoriesTableProps) {
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuItem onClick={() => handleAssignToProject(repo.repositoryUrl)}>
+                      <DropdownMenuItem onClick={() => handleAssignToProject(repo.url)}>
                         <FolderPlus className="size-4" />
                         Add to project
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => handleCreateWithRepository(repo.repositoryUrl)}>
+                      <DropdownMenuItem onClick={() => handleCreateWithRepository(repo.url)}>
                         <Plus className="size-4" />
                         Create new project
                       </DropdownMenuItem>

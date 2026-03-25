@@ -5,6 +5,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { ArrowLeft, Eye, Settings } from "lucide-react";
+import { totalContributionsForList } from "@/types/contribution";
 import { ContributionsTable } from "@/components/display/ContributionsTable/ContributionsTable";
 import { ProjectDetailDrawer } from "@/components/display/ProjectDetailDrawer/ProjectDetailDrawer";
 import { useLocalizedDescription } from "@/hooks/use-localized-description";
@@ -85,7 +86,7 @@ const ProjectDetailPage = ({ project }: { project: Project }) => {
         <div>
           <h2 className="text-2xl font-bold">{t("projects.detail.contributionsTitle")}</h2>
           <p className="text-muted-foreground mt-1">
-            {t("projects.detail.contributionCount", { count: (project.contributions || []).length })}
+            {t("projects.detail.contributionCount", { count: totalContributionsForList(project.contributions || []) })}
           </p>
         </div>
         <ContributionsTable contributions={project.contributions || []} />

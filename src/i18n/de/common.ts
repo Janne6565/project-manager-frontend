@@ -137,17 +137,15 @@ export default {
     },
     table: {
       columns: {
-        date: "Datum",
-        type: "Typ",
         repository: "Repository",
-        reference: "Referenz",
+        total: "Gesamt",
       },
       types: {
-        pullRequest: "Pull Request",
-        commit: "Commit",
-        issue: "Issue",
+        pullRequest: "Pull Requests",
+        commit: "Commits",
+        issue: "Issues",
+        review: "Reviews",
       },
-      viewLink: "Anzeigen",
       pagination: {
         rowsPerPage: "Zeilen pro Seite:",
         page: "Seite {{current}} von {{total}} ({{count}} insgesamt)",
@@ -173,6 +171,7 @@ export default {
     delete: "Löschen",
     edit: "Bearbeiten",
     save: "Speichern",
+    search: "Suchen...",
     loading: "Wird geladen...",
     error: "Fehler",
   },

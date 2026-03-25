@@ -1,6 +1,7 @@
 import type { ColumnDef } from "@tanstack/react-table";
 import { useTranslation } from "react-i18next";
 import type { Project } from "@/types/project";
+import { totalContributionsForList } from "@/types/contribution";
 import { MoreHorizontal, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -120,7 +121,7 @@ export function createProjectColumns({
       header: t("projects.table.columns.contributions"),
       cell: ({ row }) => (
         <Badge variant="outline" className="text-muted-foreground px-1.5">
-          {row.original.contributions?.length ?? 0}
+          {totalContributionsForList(row.original.contributions ?? [])}
         </Badge>
       ),
       size: 120,

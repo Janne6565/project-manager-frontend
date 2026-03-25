@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { createFileRoute } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
 import { ProtectedRoute } from '@/components/technical/protected-route';
@@ -6,7 +6,8 @@ import { useAppSelector } from '@/store/hooks';
 import { ProjectsTable } from '@/components/display/ProjectsTable/ProjectsTable';
 import { CreateProjectDialog } from '@/components/display/CreateProjectDialog/CreateProjectDialog';
 import { Button } from '@/components/ui/button';
-import { Plus } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Plus, Search } from 'lucide-react';
 
 export const Route = createFileRoute('/')({
   component: IndexPage,
@@ -18,6 +19,19 @@ function IndexPage() {
     (state) => state.projects
   );
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
+  const [search, setSearch] = useState('');
+
+  const filteredProjects = useMemo(() => {
+    if (!search.trim()) return projects;
+    const q = search.toLowerCase();
+    return projects.filter(
+      (p) =>
+        p.name.toLowerCase().includes(q) ||
+        p.descriptionEn?.toLowerCase().includes(q) ||
+        p.descriptionDe?.toLowerCase().includes(q) ||
+        p.repositories?.some((r) => r.toLowerCase().includes(q))
+    );
+  }, [projects, search]);
 
   return (
     <ProtectedRoute>
@@ -66,7 +80,18 @@ function IndexPage() {
         )}
 
         {!loading && !error && projects.length > 0 && (
-          <ProjectsTable projects={projects} />
+          <>
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                placeholder={t("common.search")}
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="pl-9"
+              />
+            </div>
+            <ProjectsTable projects={filteredProjects} />
+          </>
         )}
 
         <CreateProjectDialog

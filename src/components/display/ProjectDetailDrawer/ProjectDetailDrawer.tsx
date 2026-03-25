@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import type { Project } from "@/types/project";
+import { totalContributionsForList } from "@/types/contribution";
 import { useAppDispatch } from "@/store/hooks";
 import { updateProject } from "@/store/slices/projectsSlice";
 import {
@@ -237,7 +238,7 @@ export function ProjectDetailDrawer({
               <div className="flex flex-col gap-2">
                 <h3 className="text-sm font-medium">{t("projects.drawer.contributions")}</h3>
                 <Badge variant="outline" className="w-fit">
-                  {t("projects.drawer.contributionCount", { count: project.contributions?.length ?? 0 })}
+                  {t("projects.drawer.contributionCount", { count: totalContributionsForList(project.contributions ?? []) })}
                 </Badge>
               </div>
 
