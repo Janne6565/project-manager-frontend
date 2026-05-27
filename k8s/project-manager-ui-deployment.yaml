@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: project-manager-ui
-          image: ghcr.io/janne6565/project-manager-frontend:v1.0.0
+          image: ghcr.io/janne6565/project-manager-frontend:v1.1.0
           ports:
             - containerPort: 80
           livenessProbe:
