@@ -90,3 +90,18 @@ export async function toggleProjectVisibility(uuid: string): Promise<void> {
     method: "PATCH",
   });
 }
+
+export async function listApiKeys(): Promise<import("@/types/apiKey").ApiKey[]> {
+  return apiFetch("/admin/api-keys");
+}
+
+export async function generateApiKey(name: string): Promise<import("@/types/apiKey").GeneratedApiKey> {
+  return apiFetch("/admin/api-keys", {
+    method: "POST",
+    body: JSON.stringify({ name }),
+  });
+}
+
+export async function revokeApiKey(id: string): Promise<void> {
+  await apiFetch(`/admin/api-keys/${id}`, { method: "DELETE" });
+}

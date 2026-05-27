@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/sidebar.tsx";
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
-import { GitBranch, LogOut, PresentationIcon } from "lucide-react";
+import { GitBranch, KeyRound, LogOut, PresentationIcon } from "lucide-react";
 import { type ReactNode } from "react";
 import Logo from "@/components/display/Logo/Logo.tsx";
 import ColorSchemeToggleButton from "@/components/display/ColorSchemeToggleButton/ColorSchemeToggleButton.tsx";
@@ -36,6 +36,11 @@ const AppNavBar = () => {
         title: t("navigation.repositories"),
         icon: <GitBranch />,
         url: "/repositories",
+      },
+      {
+        title: t("navigation.apiKeys"),
+        icon: <KeyRound />,
+        url: "/api-keys",
       },
     ],
   };

@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as RepositoriesRouteImport } from './routes/repositories'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as ApiKeysRouteImport } from './routes/api-keys'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProjectProjectUuidRouteImport } from './routes/project/$projectUuid'
 
@@ -22,6 +23,11 @@ const RepositoriesRoute = RepositoriesRouteImport.update({
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiKeysRoute = ApiKeysRouteImport.update({
+  id: '/api-keys',
+  path: '/api-keys',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -37,12 +43,14 @@ const ProjectProjectUuidRoute = ProjectProjectUuidRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/api-keys': typeof ApiKeysRoute
   '/login': typeof LoginRoute
   '/repositories': typeof RepositoriesRoute
   '/project/$projectUuid': typeof ProjectProjectUuidRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/api-keys': typeof ApiKeysRoute
   '/login': typeof LoginRoute
   '/repositories': typeof RepositoriesRoute
   '/project/$projectUuid': typeof ProjectProjectUuidRoute
@@ -50,20 +58,33 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/api-keys': typeof ApiKeysRoute
   '/login': typeof LoginRoute
   '/repositories': typeof RepositoriesRoute
   '/project/$projectUuid': typeof ProjectProjectUuidRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login' | '/repositories' | '/project/$projectUuid'
+  fullPaths:
+    | '/'
+    | '/api-keys'
+    | '/login'
+    | '/repositories'
+    | '/project/$projectUuid'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/repositories' | '/project/$projectUuid'
-  id: '__root__' | '/' | '/login' | '/repositories' | '/project/$projectUuid'
+  to: '/' | '/api-keys' | '/login' | '/repositories' | '/project/$projectUuid'
+  id:
+    | '__root__'
+    | '/'
+    | '/api-keys'
+    | '/login'
+    | '/repositories'
+    | '/project/$projectUuid'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ApiKeysRoute: typeof ApiKeysRoute
   LoginRoute: typeof LoginRoute
   RepositoriesRoute: typeof RepositoriesRoute
   ProjectProjectUuidRoute: typeof ProjectProjectUuidRoute
@@ -85,6 +106,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api-keys': {
+      id: '/api-keys'
+      path: '/api-keys'
+      fullPath: '/api-keys'
+      preLoaderRoute: typeof ApiKeysRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -104,6 +132,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ApiKeysRoute: ApiKeysRoute,
   LoginRoute: LoginRoute,
   RepositoriesRoute: RepositoriesRoute,
   ProjectProjectUuidRoute: ProjectProjectUuidRoute,
