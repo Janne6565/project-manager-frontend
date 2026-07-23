@@ -13,7 +13,8 @@ export default {
   auth: {
     login: {
       title: "Login to your account",
-      description: "Enter your username and password below to access your account",
+      description:
+        "Enter your username and password below to access your account",
       username: "Username",
       password: "Password",
       usernamePlaceholder: "janne",
@@ -21,6 +22,11 @@ export default {
       loginButton: "Login",
       loggingIn: "Logging in...",
       errorDefault: "Login failed. Please try again.",
+      orDivider: "or",
+      authentikButton: "Login with Authentik",
+      oauthErrorNoAccess:
+        "Your account isn't in an access group for this application. Contact an administrator to request access.",
+      oauthErrorDefault: "Login with Authentik failed. Please try again.",
     },
     loading: "Loading...",
     logout: "Logout",
@@ -128,7 +134,8 @@ export default {
     title: "Contributions",
     empty: {
       title: "No contributions yet",
-      description: "Contributions will appear here once they're added to this project",
+      description:
+        "Contributions will appear here once they're added to this project",
     },
     table: {
       columns: {
@@ -151,7 +158,8 @@ export default {
   },
   repositories: {
     title: "Repositories",
-    description: "Repositories with unassigned contributions ({{count}} repositories)",
+    description:
+      "Repositories with unassigned contributions ({{count}} repositories)",
     loading: "Loading contributions...",
     errorTitle: "Failed to Load Contributions",
     empty: {
@@ -165,7 +173,8 @@ export default {
     generate: "Generate Key",
     generating: "Generating...",
     revokeConfirmTitle: "Revoke API Key",
-    revokeConfirmDescription: "This will permanently revoke \"{{name}}\". Any agents using this key will lose access immediately.",
+    revokeConfirmDescription:
+      'This will permanently revoke "{{name}}". Any agents using this key will lose access immediately.',
     revoke: "Revoke",
     revoking: "Revoking...",
     generatedTitle: "API Key Generated",
@@ -176,12 +185,14 @@ export default {
     nameLabel: "Key Name",
     namePlaceholder: "e.g. claude-agent-prod",
     generateTitle: "Generate New API Key",
-    generateDescription: "Give the key a descriptive name so you can identify it later.",
+    generateDescription:
+      "Give the key a descriptive name so you can identify it later.",
     loading: "Loading keys...",
     error: "Failed to load API keys",
     empty: {
       title: "No API keys",
-      description: "Generate a key to allow agents to access the project manager API",
+      description:
+        "Generate a key to allow agents to access the project manager API",
     },
     table: {
       name: "Name",

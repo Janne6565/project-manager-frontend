@@ -19,7 +19,8 @@ export default {
   auth: {
     login: {
       title: "Bei Ihrem Konto anmelden",
-      description: "Geben Sie unten Ihren Benutzernamen und Ihr Passwort ein, um auf Ihr Konto zuzugreifen",
+      description:
+        "Geben Sie unten Ihren Benutzernamen und Ihr Passwort ein, um auf Ihr Konto zuzugreifen",
       username: "Benutzername",
       password: "Passwort",
       usernamePlaceholder: "janne",
@@ -27,6 +28,12 @@ export default {
       loginButton: "Anmelden",
       loggingIn: "Anmeldung läuft...",
       errorDefault: "Anmeldung fehlgeschlagen. Bitte versuchen Sie es erneut.",
+      orDivider: "oder",
+      authentikButton: "Mit Authentik anmelden",
+      oauthErrorNoAccess:
+        "Ihr Konto gehört keiner Zugriffsgruppe für diese Anwendung an. Wenden Sie sich an einen Administrator, um Zugriff anzufordern.",
+      oauthErrorDefault:
+        "Anmeldung mit Authentik fehlgeschlagen. Bitte versuchen Sie es erneut.",
     },
     loading: "Wird geladen...",
     logout: "Abmelden",
@@ -134,7 +141,8 @@ export default {
     title: "Beiträge",
     empty: {
       title: "Noch keine Beiträge",
-      description: "Beiträge werden hier angezeigt, sobald sie diesem Projekt hinzugefügt wurden",
+      description:
+        "Beiträge werden hier angezeigt, sobald sie diesem Projekt hinzugefügt wurden",
     },
     table: {
       columns: {
@@ -157,7 +165,8 @@ export default {
   },
   repositories: {
     title: "Repositories",
-    description: "Repositories mit nicht zugewiesenen Beiträgen ({{count}} Repositories)",
+    description:
+      "Repositories mit nicht zugewiesenen Beiträgen ({{count}} Repositories)",
     loading: "Beiträge werden geladen...",
     errorTitle: "Fehler beim Laden der Beiträge",
     empty: {
@@ -167,27 +176,32 @@ export default {
   },
   apiKeys: {
     title: "API-Schlüssel",
-    description: "API-Schlüssel für Agenten- und Automatisierungszugriff verwalten",
+    description:
+      "API-Schlüssel für Agenten- und Automatisierungszugriff verwalten",
     generate: "Schlüssel erstellen",
     generating: "Wird erstellt...",
     revokeConfirmTitle: "API-Schlüssel widerrufen",
-    revokeConfirmDescription: "Dadurch wird \"{{name}}\" dauerhaft widerrufen. Agenten, die diesen Schlüssel verwenden, verlieren sofort den Zugriff.",
+    revokeConfirmDescription:
+      'Dadurch wird "{{name}}" dauerhaft widerrufen. Agenten, die diesen Schlüssel verwenden, verlieren sofort den Zugriff.',
     revoke: "Widerrufen",
     revoking: "Wird widerrufen...",
     generatedTitle: "API-Schlüssel erstellt",
-    generatedDescription: "Kopieren Sie diesen Schlüssel jetzt. Er wird nicht erneut angezeigt.",
+    generatedDescription:
+      "Kopieren Sie diesen Schlüssel jetzt. Er wird nicht erneut angezeigt.",
     copy: "Kopieren",
     copied: "Kopiert!",
     dismiss: "Fertig",
     nameLabel: "Schlüsselname",
     namePlaceholder: "z.B. claude-agent-prod",
     generateTitle: "Neuen API-Schlüssel erstellen",
-    generateDescription: "Geben Sie dem Schlüssel einen aussagekräftigen Namen, damit Sie ihn später identifizieren können.",
+    generateDescription:
+      "Geben Sie dem Schlüssel einen aussagekräftigen Namen, damit Sie ihn später identifizieren können.",
     loading: "Schlüssel werden geladen...",
     error: "Fehler beim Laden der API-Schlüssel",
     empty: {
       title: "Keine API-Schlüssel",
-      description: "Erstellen Sie einen Schlüssel, damit Agenten auf die Projektmanager-API zugreifen können",
+      description:
+        "Erstellen Sie einen Schlüssel, damit Agenten auf die Projektmanager-API zugreifen können",
     },
     table: {
       name: "Name",

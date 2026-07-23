@@ -1,11 +1,7 @@
 import { createContext, type ReactNode, useState, useEffect } from "react";
-import type {
-  User,
-  LoginRequest,
-  LoginResponse,
-  AuthStatus,
-} from "@/types/auth.ts";
+import type { User, LoginRequest, LoginResponse } from "@/types/auth.ts";
 import { API_BASE_URL } from "@/lib/api.ts";
+import { clearAccessToken, setAccessToken } from "@/lib/auth-token.ts";
 
 interface AuthContextValue {
   user: User | null;
@@ -23,24 +19,27 @@ const AuthProvider = (props: { children: ReactNode }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Bootstrap the session from the httpOnly refresh cookie: POST /auth/token
+  // mints a fresh access token (kept in memory) and returns the current user.
+  // A 401 simply means "no valid refresh cookie" → signed out.
   const checkAuthStatus = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/auth/status`, {
+      const response = await fetch(`${API_BASE_URL}/auth/token`, {
+        method: "POST",
         credentials: "include",
       });
 
       if (response.ok) {
-        const data: AuthStatus = await response.json();
-        if (data.authenticated && data.username) {
-          setUser({ username: data.username });
-        } else {
-          setUser(null);
-        }
+        const data: LoginResponse = await response.json();
+        setAccessToken(data.token);
+        setUser(data.user);
       } else {
+        clearAccessToken();
         setUser(null);
       }
     } catch (err) {
-      console.error("Auth status check failed:", err);
+      console.error("Auth bootstrap failed:", err);
+      clearAccessToken();
       setUser(null);
     } finally {
       setIsLoading(false);
@@ -64,7 +63,8 @@ const AuthProvider = (props: { children: ReactNode }) => {
       }
 
       const data: LoginResponse = await response.json();
-      setUser({ username: data.username });
+      setAccessToken(data.token);
+      setUser(data.user);
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : "Login failed. Please try again.";
@@ -82,6 +82,7 @@ const AuthProvider = (props: { children: ReactNode }) => {
     } catch (err) {
       console.error("Logout failed:", err);
     } finally {
+      clearAccessToken();
       setUser(null);
     }
   };

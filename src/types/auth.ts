@@ -1,5 +1,8 @@
+export type UserRole = "USER" | "ADMIN" | "OWNER";
+
 export interface User {
   username: string;
+  role: UserRole;
 }
 
 export interface LoginRequest {
@@ -8,12 +11,11 @@ export interface LoginRequest {
 }
 
 export interface LoginResponse {
-  message: string;
-  username: string;
-  expiresIn: number;
+  token: string;
+  expiresAt: string;
+  user: User;
 }
 
-export interface AuthStatus {
-  authenticated: boolean;
-  username: string | null;
-}
+// Login-route search param signalling an OAuth (Authentik) failure:
+// "noAccess" → user is in no access group; true → generic failure.
+export type OAuthError = "noAccess" | boolean;
